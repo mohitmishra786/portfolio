@@ -5,6 +5,7 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { DataPrefetcher } from "@/components/layout/DataPrefetcher";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 
 export const metadata: Metadata = {
   title: "Mohit Mishra | Systems Programming & OS Development",
@@ -34,6 +35,7 @@ export default function RootLayout({
             <Footer />
           </div>
         </ThemeProvider>
+        <SpeedInsights />
       </body>
     </html>
   );
