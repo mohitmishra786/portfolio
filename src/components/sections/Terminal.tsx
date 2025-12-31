@@ -87,10 +87,23 @@ export function Terminal() {
                 break;
             case "projects":
                 newHistory.push(formatLinkList([
-                    { label: "exploring-os", url: "https://github.com/mohitmishra786/exploring-os", desc: "Building an operating system from scratch." },
-                    { label: "TheCoreDump", url: "https://mohitmishra786.github.io/TheCoreDump/", desc: "Systems programming blog and project." },
-                    { label: "Advanced Portfolio", url: "/projects", desc: "This very portfolio platform." }
-                ], "Key Projects"));
+                    { label: "ai-video-clipper", url: "https://github.com/mohitmishra786/ai-video-clipper", desc: "AI-powered tool for automatically clipping segments from videos." },
+                    { label: "linux-distro-setup-in-mac", url: "https://github.com/mohitmishra786/linux-distro-setup-in-mac", desc: "Setting up Linux distributions on macOS (Apple Silicon/Intel)." },
+                    { label: "CodeDocGen", url: "https://github.com/mohitmishra786/CodeDocGen", desc: "Automated documentation generator for codebase exploration." },
+                    { label: "prompt-craft", url: "https://github.com/mohitmishra786/prompt-craft", desc: "Advanced prompt engineering toolkit for LLM optimization." },
+                    { label: "amILearningEnough", url: "https://github.com/mohitmishra786/amILearningEnough", desc: "Low-Level Programming Roadmap and Resources (C/Assembly)." },
+                    { label: "resource-grep", url: "https://github.com/mohitmishra786/resource-grep", desc: "Fast utility for finding patterns across complex codebases." },
+                    { label: "merkle-db-sync", url: "https://github.com/mohitmishra786/merkle-db-sync", desc: "Merkle Tree visualizer for efficient database replication sync." },
+                    { label: "conf-finder", url: "https://github.com/mohitmishra786/conf-finder", desc: "Utility for discovering and managing system configuration files." },
+                    { label: "reversingBits", url: "https://github.com/mohitmishra786/reversingBits", desc: "Cheatsheets for reverse engineering and binary analysis." },
+                    { label: "low-level-quest", url: "https://github.com/mohitmishra786/low-level-quest", desc: "Educational roadmap for mastering systems programming." },
+                    { label: "lsm-tree-generator", url: "https://github.com/mohitmishra786/lsm-tree-generator", desc: "Python implementation of an LSM Tree for key-value storage." },
+                    { label: "kaggle-c-lib", url: "https://github.com/mohitmishra786/kaggle-c-lib", desc: "Optimized C library for handling large datasets." },
+                    { label: "asm-mnist", url: "https://github.com/mohitmishra786/asm-mnist", desc: "MNIST digit recognition implemented in x86-64 assembly." },
+                    { label: "b-plus-tree-generator", url: "https://github.com/mohitmishra786/b-plus-tree-generator", desc: "Visualization of high-performance B+ Tree data structures." },
+                    { label: "minimalist-md-site-generator", url: "https://github.com/mohitmishra786/minimalist-md-site-generator", desc: "Ultra-fast static site generator for Markdown." },
+                    { label: "miniPerceptron", url: "https://github.com/mohitmishra786/miniPerceptron", desc: "Minimalist perceptron-based neural network from scratch." }
+                ], "Curated Best Projects"));
                 break;
             case "blog":
                 newHistory.push(formatLinkList([
