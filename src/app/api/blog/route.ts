@@ -1,8 +1,11 @@
 import { NextResponse } from "next/server";
-import Parser from "rss-parser";
+import { XMLParser } from "fast-xml-parser";
 import { getCachedData } from "@/lib/cache";
 
-const parser = new Parser();
+const parser = new XMLParser({
+    ignoreAttributes: false,
+    attributeNamePrefix: "@_",
+});
 
 const feeds = [
     { name: "Substack", url: "https://chessman7.substack.com/feed", defaultCount: 51 },
@@ -13,7 +16,7 @@ const feeds = [
 export async function GET() {
     try {
         const data = await getCachedData("blog-feeds", async () => {
-            const allPosts = [];
+            const allPosts: any[] = [];
             const counts: Record<string, number> = {
                 "Substack": 51,
                 "Medium": 90,
@@ -23,16 +26,34 @@ export async function GET() {
 
             for (const feed of feeds) {
                 try {
-                    const feedData = await parser.parseURL(feed.url);
-                    counts[feed.name] = Math.max(feed.defaultCount, feedData.items.length);
-                    const posts = feedData.items.map((item) => ({
-                        title: item.title || "Untitled",
-                        link: item.link || "#",
-                        pubDate: item.pubDate || new Date().toISOString(),
-                        contentSnippet: item.contentSnippet || "",
-                        source: feed.name,
-                        image: item.enclosure?.url,
-                    }));
+                    const response = await fetch(feed.url);
+                    const xmlText = await response.text();
+                    const jsonObj = parser.parse(xmlText);
+
+                    // Support for both RSS 2.0 (channel.item) and Atom (feed.entry)
+                    const channel = jsonObj.rss?.channel || jsonObj.feed;
+                    const items = channel?.item || jsonObj.feed?.entry || [];
+                    const normalizedItems = Array.isArray(items) ? items : [items];
+
+                    counts[feed.name] = Math.max(feed.defaultCount, normalizedItems.length);
+
+                    const posts = normalizedItems.map((item: any) => {
+                        // Handle different tag names for RSS vs Atom
+                        const title = item.title?.["#text"] || item.title || "Untitled";
+                        const link = item.link?.["@_href"] || item.link || "#";
+                        const pubDate = item.pubDate || item.published || item.updated || new Date().toISOString();
+                        const contentSnippet = item.description || item.summary || item.contentSnippet || "";
+
+                        return {
+                            title,
+                            link,
+                            pubDate,
+                            contentSnippet: typeof contentSnippet === "string" ? contentSnippet.replace(/<[^>]*>?/gm, "").slice(0, 160) : "",
+                            source: feed.name,
+                            image: item.enclosure?.["@_url"] || item["media:content"]?.["@_url"],
+                        };
+                    });
+
                     allPosts.push(...posts);
                 } catch (error) {
                     console.error(`Error fetching ${feed.name}:`, error);
