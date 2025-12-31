@@ -2,33 +2,55 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Mail, CheckCircle2, Loader2 } from "lucide-react";
+import { Mail, CheckCircle2, Loader2, AlertCircle } from "lucide-react";
+
+const subscribeSchema = z.object({
+    email: z.string().email("Please enter a valid email address"),
+    honeypot: z.string().optional(),
+});
+
+type SubscribeInput = z.infer<typeof subscribeSchema>;
 
 export function Newsletter() {
-    const [email, setEmail] = useState("");
     const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
+    const [errorMessage, setErrorMessage] = useState("");
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
+    const {
+        register,
+        handleSubmit,
+        reset,
+        formState: { errors },
+    } = useForm<SubscribeInput>({
+        resolver: zodResolver(subscribeSchema),
+    });
+
+    const onSubmit = async (data: SubscribeInput) => {
         setStatus("loading");
+        setErrorMessage("");
 
         try {
             const response = await fetch("/api/subscribe", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ email }),
+                body: JSON.stringify(data),
             });
 
             if (response.ok) {
                 setStatus("success");
-                setEmail("");
+                reset();
             } else {
+                const errorData = await response.json();
+                setErrorMessage(errorData.error || "Something went wrong. Please try again.");
                 setStatus("error");
             }
         } catch (error) {
             console.error("Subscription error:", error);
+            setErrorMessage("Connection failed. Check your internet and try again.");
             setStatus("error");
         }
     };
@@ -39,12 +61,12 @@ export function Newsletter() {
             <div className="absolute top-0 right-0 w-96 h-96 bg-primary/10 blur-[100px] rounded-full -translate-y-1/2 translate-x-1/2" />
             <div className="absolute bottom-0 left-0 w-96 h-96 bg-accent-cyan/10 blur-[100px] rounded-full translate-y-1/2 -translate-x-1/2" />
 
-            <div className="container px-4 mx-auto max-w-4xl text-center relative z-10">
+            <div className="container px-4 mx-auto max-w-4xl text-center relative z-10 font-mono">
                 <motion.div
                     initial={{ opacity: 0, scale: 0.95 }}
                     whileInView={{ opacity: 1, scale: 1 }}
                     viewport={{ once: true }}
-                    className="glass p-12 rounded-3xl"
+                    className="glass p-12 rounded-3xl border border-white/10"
                 >
                     <div className="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center mx-auto mb-8">
                         <Mail className="w-8 h-8 text-primary" />
@@ -64,40 +86,80 @@ export function Newsletter() {
                                 className="flex flex-col items-center gap-4 text-emerald-500"
                             >
                                 <CheckCircle2 className="w-12 h-12" />
-                                <p className="text-xl font-bold">You're on the list!</p>
-                                <Button variant="ghost" onClick={() => setStatus("idle")}>Subscribe another email</Button>
+                                <p className="text-xl font-bold">Subscribed! Check your inbox.</p>
+                                <Button variant="ghost" onClick={() => setStatus("idle")} className="hover:bg-emerald-500/10">
+                                    Subscribe another email
+                                </Button>
                             </motion.div>
                         ) : (
-                            <motion.form
+                            <motion.div
                                 initial={{ opacity: 0 }}
                                 animate={{ opacity: 1 }}
                                 exit={{ opacity: 0 }}
-                                onSubmit={handleSubmit}
-                                className="flex flex-col md:flex-row gap-4 max-w-md mx-auto"
+                                className="max-w-md mx-auto"
                             >
-                                <Input
-                                    type="email"
-                                    placeholder="Enter your email"
-                                    required
-                                    value={email}
-                                    onChange={(e) => setEmail(e.target.value)}
-                                    className="rounded-full bg-white/5 border-white/10 h-12 px-6 focus:ring-primary/50"
-                                    disabled={status === "loading"}
-                                />
-                                <Button
-                                    type="submit"
-                                    size="lg"
-                                    className="rounded-full px-8 h-12 font-bold"
-                                    disabled={status === "loading"}
-                                >
-                                    {status === "loading" ? <Loader2 className="w-4 h-4 animate-spin" /> : "Subscribe"}
-                                </Button>
-                            </motion.form>
+                                <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+                                    {/* Honeypot Field (Hidden) */}
+                                    <input
+                                        type="text"
+                                        className="hidden"
+                                        {...register("honeypot")}
+                                        tabIndex={-1}
+                                        autoComplete="off"
+                                    />
+
+                                    <div className="flex flex-col md:flex-row gap-4">
+                                        <div className="flex-1">
+                                            <Input
+                                                {...register("email")}
+                                                type="email"
+                                                placeholder="user@kernel.org"
+                                                className={`rounded-full bg-white/5 border-white/10 h-12 px-6 focus:ring-primary/50 ${errors.email ? "border-red-500/50" : ""
+                                                    }`}
+                                                disabled={status === "loading"}
+                                            />
+                                        </div>
+                                        <Button
+                                            type="submit"
+                                            size="lg"
+                                            className="rounded-full px-8 h-12 font-bold bg-primary hover:bg-primary/90 text-black"
+                                            disabled={status === "loading"}
+                                        >
+                                            {status === "loading" ? (
+                                                <Loader2 className="w-4 h-4 animate-spin" />
+                                            ) : (
+                                                "Subscribe"
+                                            )}
+                                        </Button>
+                                    </div>
+
+                                    {errors.email && (
+                                        <motion.p
+                                            initial={{ opacity: 0, height: 0 }}
+                                            animate={{ opacity: 1, height: "auto" }}
+                                            className="text-red-400 text-xs text-left ml-4 mt-2"
+                                        >
+                                            {errors.email.message}
+                                        </motion.p>
+                                    )}
+
+                                    {status === "error" && (
+                                        <motion.div
+                                            initial={{ opacity: 0, scale: 0.9 }}
+                                            animate={{ opacity: 1, scale: 1 }}
+                                            className="flex items-center gap-2 text-red-400 bg-red-400/10 p-3 rounded-xl text-sm"
+                                        >
+                                            <AlertCircle className="w-4 h-4 shrink-0" />
+                                            <p>{errorMessage}</p>
+                                        </motion.div>
+                                    )}
+                                </form>
+                            </motion.div>
                         )}
                     </AnimatePresence>
 
-                    <p className="mt-6 text-xs text-muted-foreground">
-                        No spam, only pure technical content. Unsubscribe anytime.
+                    <p className="mt-8 text-xs text-muted-foreground opacity-60">
+                        Join developers from <span className="text-primary">TheCoreDump</span> & <span className="text-primary">exploring-os</span>.
                     </p>
                 </motion.div>
             </div>
