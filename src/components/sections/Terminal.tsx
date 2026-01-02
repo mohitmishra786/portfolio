@@ -187,7 +187,6 @@ export function Terminal() {
                             <span className="text-emerald-400 font-bold whitespace-nowrap">mohit@ubuntu:~$</span>
                             <input
                                 type="text"
-                                autoFocus
                                 value={input}
                                 onChange={(e) => setInput(e.target.value)}
                                 className="flex-1 bg-transparent border-none outline-none text-white w-full caret-white"

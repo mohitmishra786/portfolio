@@ -144,20 +144,192 @@ export default function AboutPage() {
                     </div>
 
                     <div className="border-t border-white/5 pt-20">
-                        <h2 className="text-3xl font-black mb-12">The Journey</h2>
-                        <div className="space-y-12">
+                        <h2 className="text-3xl font-black mb-12">Professional Journey</h2>
+                        <div className="relative border-l border-white/10 ml-3 md:ml-6 space-y-16">
                             {[
-                                { year: "2024", title: "Building myOwnOS", desc: "Started developing a microkernel-based operating system from scratch." },
-                                { year: "2023", title: "Reverse Engineering Specialist", desc: "Focused on malware analysis and vulnerability research." },
-                                { year: "2022", title: "Systems Programmer", desc: "Landed deep into C development and Linux kernel exploration." }
+                                {
+                                    company: "Outpayce from Amadeus",
+                                    role: "Software Developer",
+                                    period: "Jul 2023 - Present",
+                                    duration: "2 yrs 7 mos",
+                                    location: "Bengaluru, Karnataka, India · Hybrid",
+                                    desc: [
+                                        "Demonstrated strong learning agility by quickly grasping core functionalities written in C++ and SQL used in the payment processing system.",
+                                        "Developed innovative improvements to functionalities, streamlining processes and minimizing the need for manual work.",
+                                        "Optimized job performance and addressed escalated production issues through code enhancements."
+                                    ],
+                                    skills: ["C++", "SQL", "Agile Methodologies", "Data Structures", "Algorithms", "Microservices", "DBMS"]
+                                },
+                                {
+                                    company: "Outpayce from Amadeus",
+                                    role: "Software Developer Intern",
+                                    period: "Feb 2023 - Jul 2023",
+                                    duration: "6 mos",
+                                    desc: [
+                                        "Implemented AngularJS to revamp the Credit Card Tokenization System.",
+                                        "Integrated REST API for secure and efficient credit card data handling.",
+                                        "Implemented validation procedures using Jasmine and Karma for thorough testing and issue detection.",
+                                        "Contributed to developing microservices using Quarkus for optimized performance and scalability."
+                                    ],
+                                    skills: ["REST APIs", "AngularJS", "Docker", "Kubernetes", "Microservices", "Quarkus", "Kafka", "Java"]
+                                },
+                                {
+                                    company: "Omdena",
+                                    role: "Machine Learning Engineer (Intern)",
+                                    period: "Sep 2021 - Jul 2022",
+                                    duration: "11 mos",
+                                    location: "Palo Alto, California, United States",
+                                    desc: [
+                                        "Managed and guided a team of four engineers in successfully developing an ML prediction model for eviction/homelessness checks.",
+                                        "Improved career recommendation model accuracy from 82% to 91% by implementing advanced techniques.",
+                                        "Led the development of an image augmentation pipeline for school image datasets.",
+                                        "Collaborated with professionals to deploy and manage ML models using edge computing and cloud technologies."
+                                    ],
+                                    skills: ["Python", "Deep Learning", "Flask", "Computer Vision", "NLP", "Machine Learning", "CI/CD"]
+                                },
+                                {
+                                    company: "JGEC Winter of Code",
+                                    role: "Collaborator",
+                                    period: "Feb 2023 - Mar 2023",
+                                    duration: "2 mos",
+                                    location: "Remote",
+                                    desc: ["Contributed to open source projects and collaborated with the developer community."]
+                                },
+                                {
+                                    company: "Kharagpur Open Source Society",
+                                    role: "Collaborator",
+                                    period: "Nov 2021 - Feb 2022",
+                                    duration: "4 mos",
+                                    desc: ["Participated in open source initiatives and community building."]
+                                },
+                                {
+                                    company: "GirlScript Winter of Contributing",
+                                    role: "Open Source Contributor",
+                                    period: "Aug 2021 - Dec 2021",
+                                    duration: "5 mos",
+                                    location: "India",
+                                    desc: ["Active contributor to open source repositories and documentation."]
+                                },
+                                {
+                                    company: "iNeuron.ai",
+                                    role: "Project Intern",
+                                    period: "Jul 2021 - Sep 2021",
+                                    duration: "3 mos",
+                                    desc: ["Worked on data science and machine learning projects."]
+                                }
                             ].map((item, i) => (
-                                <div key={i} className="flex gap-8 group">
-                                    <div className="text-2xl font-black text-primary/30 group-hover:text-primary transition-colors">{item.year}</div>
-                                    <div>
-                                        <h4 className="text-xl font-bold text-white mb-2">{item.title}</h4>
-                                        <p className="text-muted-foreground">{item.desc}</p>
+                                <div key={i} className="relative pl-8 md:pl-12 group">
+                                    {/* Dot */}
+                                    <div className="absolute -left-[5px] md:-left-[5px] top-2 w-3 h-3 rounded-full bg-primary/20 border-2 border-primary group-hover:scale-125 transition-transform bg-black" />
+
+                                    <div className="flex flex-col sm:flex-row sm:items-baseline sm:justify-between mb-2">
+                                        <h3 className="text-xl md:text-2xl font-bold text-white group-hover:text-primary transition-colors">
+                                            {item.role}
+                                        </h3>
+                                        <div className="font-mono text-sm text-muted-foreground whitespace-nowrap">
+                                            {item.period}
+                                        </div>
                                     </div>
+
+                                    <div className="text-lg font-medium text-white/80 mb-1">{item.company}</div>
+
+                                    {(item.location || item.duration) && (
+                                        <div className="text-xs text-muted-foreground mb-4 flex gap-3">
+                                            {item.location && <span className="flex items-center gap-1"><Globe className="w-3 h-3" /> {item.location}</span>}
+                                            {item.duration && <span>• {item.duration}</span>}
+                                        </div>
+                                    )}
+
+                                    <ul className="space-y-2 mb-4 text-muted-foreground list-disc ml-4">
+                                        {item.desc.map((d, k) => (
+                                            <li key={k} className="text-sm md:text-base leading-relaxed pl-1">{d}</li>
+                                        ))}
+                                    </ul>
+
+                                    {item.skills && (
+                                        <div className="flex flex-wrap gap-2 mt-4">
+                                            {item.skills.map(skill => (
+                                                <Badge key={skill} variant="outline" className="text-xs border-white/10 text-white/50 hover:text-white hover:border-white/30">
+                                                    {skill}
+                                                </Badge>
+                                            ))}
+                                        </div>
+                                    )}
                                 </div>
+                            ))}
+                        </div>
+                    </div>
+
+                    <div className="border-t border-white/5 pt-20 mt-20">
+                        <h2 className="text-3xl font-black mb-12">Publications</h2>
+                        <div className="grid gap-8">
+                            {[
+                                {
+                                    title: "Executable Files for Linux: Under the Hood of ELFs for Flexible and Secure Low-Level Coding",
+                                    publisher: "Apress",
+                                    date: "June 2026 (Forthcoming)",
+                                    link: "https://www.amazon.com/Executable-Files-Linux-Flexible-Low-Level/dp/B0FQTTBB79",
+                                    desc: "A deep dive into the Executable and Linkable Format (ELF). Explore how code is compiled, linked, and loaded in memory. Covers binary analysis, dynamic linking, symbol resolution, and kernel-level execution processes for systems programmers and security researchers.",
+                                    author: "Mohit Mishra",
+                                    type: "Book"
+                                },
+                                {
+                                    title: "Global Perspectives on Climate Change, Inequality, and Multinational Corporations",
+                                    publisher: "Springer",
+                                    date: "April 2025",
+                                    link: "https://link.springer.com/book/10.1007/978-3-031-80797-8",
+                                    desc: "Investigates the intersection of climate change mitigation, global inequality, and the role of multinational corporations in modern environmental challenges.",
+                                    type: "Book"
+                                }
+                            ].map((pub, i) => (
+                                <motion.div
+                                    key={i}
+                                    initial={{ opacity: 0, y: 20 }}
+                                    whileInView={{ opacity: 1, y: 0 }}
+                                    viewport={{ once: true }}
+                                    transition={{ delay: i * 0.1 }}
+                                >
+                                    <Card className="glass border-none hover:bg-white/[0.03] transition-colors overflow-hidden">
+                                        <CardContent className="p-8">
+                                            <div className="flex flex-col md:flex-row md:items-start justify-between gap-6">
+                                                <div className="space-y-4 flex-1">
+                                                    <div className="flex items-center gap-3">
+                                                        <Badge variant="outline" className="text-primary border-primary/30 uppercase tracking-wider text-[10px]">
+                                                            {pub.type}
+                                                        </Badge>
+                                                        <span className="text-sm text-muted-foreground font-mono">{pub.date}</span>
+                                                    </div>
+                                                    <h3 className="text-2xl font-bold text-white group-hover:text-primary transition-colors">
+                                                        {pub.title}
+                                                    </h3>
+                                                    <p className="text-muted-foreground leading-relaxed">
+                                                        {pub.desc}
+                                                    </p>
+                                                    <div className="flex items-center gap-4 pt-2">
+                                                        <div className="flex items-center gap-2 text-sm text-white/70">
+                                                            <span className="font-semibold">{pub.publisher}</span>
+                                                        </div>
+                                                        {pub.author && (
+                                                            <div className="text-sm text-muted-foreground">
+                                                                Author: <span className="text-white/70">{pub.author}</span>
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                                {pub.link && (
+                                                    <a
+                                                        href={pub.link}
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                        className="px-6 py-3 rounded-xl bg-primary/10 text-primary hover:bg-primary hover:text-white transition-all font-bold text-sm whitespace-nowrap"
+                                                    >
+                                                        View Publication
+                                                    </a>
+                                                )}
+                                            </div>
+                                        </CardContent>
+                                    </Card>
+                                </motion.div>
                             ))}
                         </div>
                     </div>
