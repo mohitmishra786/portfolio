@@ -1,20 +1,26 @@
 "use client";
 
 import { motion, useMotionTemplate, useMotionValue } from "framer-motion";
-import { ExternalLink, Github, MousePointer2 } from "lucide-react";
+import { ExternalLink, Github, Star, Globe } from "lucide-react";
 import { MouseEvent } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import type { Project } from "@/data/projects";
 
 interface ProjectCardProps {
-    title: string;
-    description: string;
-    stack: string;
-    link: string;
-    github: string;
+    project: Project;
+    /** Featured cards surface highlights + star counts. */
+    featured?: boolean;
 }
 
-export function ProjectCard({ title, description, stack, link, github }: ProjectCardProps) {
+function formatCount(n?: number): string | null {
+    if (n == null) return null;
+    if (n >= 1000) return `${(n / 1000).toFixed(1).replace(/\.0$/, "")}k`;
+    return String(n);
+}
+
+export function ProjectCard({ project, featured: forcedFeatured }: ProjectCardProps) {
+    const featured = forcedFeatured ?? project.featured ?? false;
     const mouseX = useMotionValue(0);
     const mouseY = useMotionValue(0);
 
@@ -24,7 +30,9 @@ export function ProjectCard({ title, description, stack, link, github }: Project
         mouseY.set(clientY - top);
     }
 
-    const stacks = stack.split(",").map((s) => s.trim());
+    const stacks = project.stack.split(",").map((s) => s.trim());
+    const hasHomepage = Boolean(project.homepage);
+    const starLabel = formatCount(project.stars);
 
     return (
         <motion.div
@@ -66,24 +74,31 @@ export function ProjectCard({ title, description, stack, link, github }: Project
 
                 <CardHeader className="pb-4 z-10">
                     <div className="flex justify-between items-start gap-4">
-                        <CardTitle className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-gray-900 to-gray-600 dark:from-white dark:to-white/70 group-hover:to-primary transition-colors duration-300">
-                            {title}
-                        </CardTitle>
-                        <div className="flex gap-2">
-                            {/* Only show external link if it's different from github or if user explicitly wants both. 
-                                 For now, showing both as per data usually having distinct links. */}
+                        <div className="space-y-1 min-w-0">
+                            <CardTitle className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-gray-900 to-gray-600 dark:from-white dark:to-white/70 group-hover:to-primary transition-colors duration-300">
+                                {project.title}
+                            </CardTitle>
+                            {project.tagline && (
+                                <p className="text-sm text-muted-foreground line-clamp-1">
+                                    {project.tagline}
+                                </p>
+                            )}
+                        </div>
+                        <div className="flex gap-2 shrink-0">
                             <a
-                                href={github}
+                                href={project.github}
                                 target="_blank"
                                 rel="noopener noreferrer"
+                                aria-label={`${project.title} on GitHub`}
                                 className="p-2 rounded-full bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 hover:text-primary transition-colors duration-200 text-gray-700 dark:text-gray-300"
                             >
                                 <Github className="w-4 h-4" />
                             </a>
                             <a
-                                href={link}
+                                href={project.link}
                                 target="_blank"
                                 rel="noopener noreferrer"
+                                aria-label={`Open ${project.title}`}
                                 className="p-2 rounded-full bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 hover:text-primary transition-colors duration-200 text-gray-700 dark:text-gray-300"
                             >
                                 <ExternalLink className="w-4 h-4" />
@@ -94,8 +109,21 @@ export function ProjectCard({ title, description, stack, link, github }: Project
 
                 <CardContent className="space-y-4 z-10">
                     <p className="text-gray-600 dark:text-muted-foreground leading-relaxed line-clamp-3 min-h-[4.5rem]">
-                        {description}
+                        {project.description}
                     </p>
+
+                    {featured && project.highlights && project.highlights.length > 0 && (
+                        <div className="flex flex-wrap gap-2">
+                            {project.highlights.map((h) => (
+                                <Badge
+                                    key={h}
+                                    className="bg-primary/10 text-primary border-primary/20 dark:bg-primary/20"
+                                >
+                                    {h}
+                                </Badge>
+                            ))}
+                        </div>
+                    )}
 
                     <div className="flex flex-wrap gap-2 pt-2">
                         {stacks.map((tech) => (
@@ -107,6 +135,22 @@ export function ProjectCard({ title, description, stack, link, github }: Project
                                 {tech}
                             </Badge>
                         ))}
+                    </div>
+
+                    <div className="flex items-center gap-3 pt-1 text-xs text-muted-foreground">
+                        {starLabel && (
+                            <span className="inline-flex items-center gap-1">
+                                <Star className="w-3 h-3 fill-current text-amber-500" />
+                                {starLabel}
+                                {project.forks ? ` · ${project.forks} forks` : ""}
+                            </span>
+                        )}
+                        {hasHomepage && (
+                            <span className="inline-flex items-center gap-1">
+                                <Globe className="w-3 h-3" />
+                                Live demo
+                            </span>
+                        )}
                     </div>
                 </CardContent>
             </Card>
