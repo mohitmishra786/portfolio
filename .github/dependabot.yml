@@ -1,0 +1,90 @@
+# Dependabot configuration for the portfolio project.
+#
+# Design goals:
+#   - Security: alerts (vulnerability scanning) are generated continuously, while
+#     the actual dependency *updates* are surfaced as a single batched PR so the
+#     diff stays reviewable and CI runs once.
+#   - One PR, not many: every ecosystem groups all updates into a single PR via
+#     the `groups` config. Security updates are also grouped together.
+#   - Cadence: update PRs are opened/refreshed on Monday only (`schedule: monday`).
+#     Vulnerability *alerts* themselves still scan daily (GitHub runs alert
+#     detection continuously independent of this schedule); the Monday cadence
+#     governs when update PRs are raised.
+#
+# Docs: https://docs.github.com/code-security/dependabot/dependabot-version-updates/configuration-options-for-the-dependabot.yml-file
+
+version: 2
+
+updates:
+  # ── npm / JavaScript dependencies ──────────────────────────────────────────
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "07:00"
+      timezone: "America/Chicago"
+    open-pull-requests-limit: 10
+    # Batch every npm update into a SINGLE pull request.
+    groups:
+      # All security updates for npm deps land in one PR.
+      npm-security:
+        applies-to: "security"
+        update-types:
+          - "patch"
+          - "minor"
+          - "major"
+      # All non-security version updates also land in one PR.
+      npm-version-updates:
+        applies-to: "version-updates"
+        update-types:
+          - "patch"
+          - "minor"
+          - "major"
+    commit-message:
+      prefix: "deps"
+      include: "scope"
+    labels:
+      - "dependencies"
+      - "npm"
+    pull-request-branch-name:
+      separator: "-"
+    # Keep version bumps conservative for a shipping app.
+    # Allow minor + patch by default; major updates are still grouped above.
+    ignore:
+      # Pin React to 19.x (App Router on Next 16 expects React 19).
+      - dependency-name: "react"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "react-dom"
+        update-types: ["version-update:semver-major"]
+
+  # ── GitHub Actions workflows ───────────────────────────────────────────────
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "07:00"
+      timezone: "America/Chicago"
+    open-pull-requests-limit: 10
+    groups:
+      actions-security:
+        applies-to: "security"
+        update-types:
+          - "patch"
+          - "minor"
+          - "major"
+      actions-version-updates:
+        applies-to: "version-updates"
+        update-types:
+          - "patch"
+          - "minor"
+          - "major"
+    commit-message:
+      prefix: "ci"
+      include: "scope"
+    labels:
+      - "dependencies"
+      - "github-actions"
+    pull-request-branch-name:
+      separator: "-"
