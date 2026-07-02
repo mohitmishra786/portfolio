@@ -1,17 +1,18 @@
 # Dependabot configuration for the portfolio project.
 #
 # Design goals:
-#   - Security: alerts (vulnerability scanning) are generated continuously, while
-#     the actual dependency *updates* are surfaced as a single batched PR so the
-#     diff stays reviewable and CI runs once.
-#   - One PR, not many: every ecosystem groups all updates into a single PR via
-#     the `groups` config. Security updates are also grouped together.
-#   - Cadence: update PRs are opened/refreshed on Monday only (`schedule: monday`).
-#     Vulnerability *alerts* themselves still scan daily (GitHub runs alert
-#     detection continuously independent of this schedule); the Monday cadence
-#     governs when update PRs are raised.
+#   - One PR per ecosystem, not many: each `groups` entry batches all matching
+#     updates into a single pull request. There are two groups per ecosystem so
+#     security fixes and routine version bumps land in their own single PR.
+#   - Cadence: version-update PRs are opened/refreshed on Monday only.
+#     Vulnerability (security) PRs are raised as soon as an advisory is detected
+#     — independent of this schedule — so detection stays fast while routine
+#     review burden is weekly.
 #
-# Docs: https://docs.github.com/code-security/dependabot/dependabot-version-updates/configuration-options-for-the-dependabot.yml-file
+# NOTE on `applies-to`: valid values are ONLY `version-updates` or
+# `security-updates` (defaults to `version-updates` when omitted). The value
+# `security` is invalid and causes GitHub to reject this file.
+# Ref: https://docs.github.com/code-security/reference/supply-chain-security/dependabot-options-reference
 
 version: 2
 
@@ -25,11 +26,11 @@ updates:
       time: "07:00"
       timezone: "America/Chicago"
     open-pull-requests-limit: 10
-    # Batch every npm update into a SINGLE pull request.
+    # Batch updates into a SINGLE pull request per group.
     groups:
-      # All security updates for npm deps land in one PR.
+      # All security (advisory-driven) updates for npm deps land in one PR.
       npm-security:
-        applies-to: "security"
+        applies-to: "security-updates"
         update-types:
           - "patch"
           - "minor"
@@ -49,10 +50,8 @@ updates:
       - "npm"
     pull-request-branch-name:
       separator: "-"
-    # Keep version bumps conservative for a shipping app.
-    # Allow minor + patch by default; major updates are still grouped above.
+    # Pin React to 19.x — the App Router on Next 16 expects React 19.
     ignore:
-      # Pin React to 19.x (App Router on Next 16 expects React 19).
       - dependency-name: "react"
         update-types: ["version-update:semver-major"]
       - dependency-name: "react-dom"
@@ -69,7 +68,7 @@ updates:
     open-pull-requests-limit: 10
     groups:
       actions-security:
-        applies-to: "security"
+        applies-to: "security-updates"
         update-types:
           - "patch"
           - "minor"
