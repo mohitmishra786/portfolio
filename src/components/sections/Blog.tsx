@@ -57,7 +57,7 @@ export function Blog({ hideHeader = false }: BlogProps) {
                         className="text-center mb-16"
                     >
                         <h2 className="text-3xl md:text-5xl font-black mb-4">
-                            Technical <span className="text-gradient">Articles</span>
+                            Technical articles
                         </h2>
                         <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
                             Thoughts on systems programming, OS development, and the low-level details of software.

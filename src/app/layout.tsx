@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { inter, jetbrainsMono } from "@/lib/utils/fonts";
+import { geist, geistMono } from "@/lib/utils/fonts";
 import "@/app/globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Header } from "@/components/layout/Header";
@@ -7,9 +7,7 @@ import { Footer } from "@/components/layout/Footer";
 import { DataPrefetcher } from "@/components/layout/DataPrefetcher";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Analytics } from "@vercel/analytics/next";
-
-const siteUrl =
-  process.env.NEXT_PUBLIC_BASE_URL || "https://mohitmishra7.com";
+import { personJsonLd, siteUrl } from "@/lib/seo";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
@@ -18,7 +16,7 @@ export const metadata: Metadata = {
     template: "%s | Mohit Mishra",
   },
   description:
-    "Portfolio of Mohit Mishra (Chessman) — systems programmer, low-level engineering specialist, and open-source author. 2.4k+ GitHub stars across developer tooling, AI, and systems work.",
+    "Mohit Mishra (Chessman), systems programmer. Build Distributed Systems has 5,000+ users. LowLevelCraft has 1,556+ registered users. amILearningEnough has 1,356 GitHub stars.",
   keywords: [
     "Mohit Mishra",
     "Chessman",
@@ -32,19 +30,34 @@ export const metadata: Metadata = {
   ],
   authors: [{ name: "Mohit Mishra" }],
   creator: "Mohit Mishra",
+  alternates: {
+    canonical: siteUrl,
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+      "max-video-preview": -1,
+    },
+  },
   openGraph: {
     type: "website",
     url: siteUrl,
     title: "Mohit Mishra | Systems Programming & OS Development",
     description:
-      "Systems programmer and open-source author — developer tooling, AI integration, and low-level engineering. 2.4k+ GitHub stars.",
+      "Systems programmer. Build Distributed Systems (5,000+ users), LowLevelCraft (1,556+ users), and the amILearningEnough roadmap (1,356 GitHub stars).",
     siteName: "Mohit Mishra",
+    locale: "en_US",
   },
   twitter: {
     card: "summary_large_image",
     title: "Mohit Mishra | Systems Programming & OS Development",
     description:
-      "Systems programmer and open-source author — developer tooling, AI, and low-level engineering.",
+      "Systems programmer. Build Distributed Systems (5,000+ users) and LowLevelCraft (1,556+ users).",
     creator: "@chessMan786",
   },
 };
@@ -57,8 +70,12 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`${inter.variable} ${jetbrainsMono.variable} antialiased`}
+        className={`${geist.variable} ${geistMono.variable} antialiased`}
       >
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(personJsonLd) }}
+        />
         <ThemeProvider
           attribute="class"
           defaultTheme="dark"
@@ -66,9 +83,15 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <div className="relative flex min-h-screen flex-col">
+            <a
+              href="#content"
+              className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded-md focus:bg-primary focus:px-3 focus:py-2 focus:text-primary-foreground"
+            >
+              Skip to content
+            </a>
             <DataPrefetcher />
             <Header />
-            <main className="flex-1">{children}</main>
+            <main id="content" className="flex-1">{children}</main>
             <Footer />
           </div>
         </ThemeProvider>

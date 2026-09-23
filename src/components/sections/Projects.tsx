@@ -76,7 +76,7 @@ export function Projects({ hideHeader = false }: ProjectsProps) {
                         className="text-center mb-16"
                     >
                         <h2 className="text-3xl md:text-5xl font-black mb-4">
-                            Projects & <span className="text-gradient">Research</span>
+                            Projects and research
                         </h2>
                         <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
                             Categorized overview of my technical contributions and open-source impact.

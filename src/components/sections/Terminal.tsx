@@ -123,7 +123,7 @@ export function Terminal() {
             case "about":
                 newHistory.push(
                     <div key="about-output" className="mb-4 leading-relaxed opacity-90">
-                        I&apos;m Mohit Mishra, a systems programming specialist. I love building things from scratch—whether it&apos;s an operating system kernel or a high-performance web platform.
+                        I&apos;m Mohit Mishra, a systems programming specialist. I build things from scratch, from operating system kernels to learning platforms.
                     </div>
                 );
                 break;

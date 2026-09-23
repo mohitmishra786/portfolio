@@ -1,16 +1,13 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Card, CardContent } from "@/components/ui/card";
-import { Star, GitCommit, Layout, PenTool } from "lucide-react";
 import { useEffect, useState } from "react";
 
 export function About() {
     const [stats, setStats] = useState([
-        { label: "GitHub Stars", value: "---", icon: Star, color: "text-yellow-500" },
-        { label: "Total Commits", value: "2.4k+", icon: GitCommit, color: "text-blue-500" },
-        { label: "Projects Built", value: "---", icon: Layout, color: "text-purple-500" },
-        { label: "Blog Posts", value: "---", icon: PenTool, color: "text-emerald-500" },
+        { label: "GitHub stars", value: "---" },
+        { label: "Public repos", value: "---" },
+        { label: "Blog posts", value: "---" },
     ]);
 
     useEffect(() => {
@@ -20,8 +17,8 @@ export function About() {
             .then(data => {
                 if (data.stats) {
                     setStats(prev => prev.map(s => {
-                        if (s.label === "GitHub Stars") return { ...s, value: `${data.stats.stars}+` };
-                        if (s.label === "Projects Built") return { ...s, value: `${data.stats.projects}+` };
+                        if (s.label === "GitHub stars") return { ...s, value: `${data.stats.stars}+` };
+                        if (s.label === "Public repos") return { ...s, value: `${data.stats.projects}` };
                         return s;
                     }));
                 }
@@ -34,7 +31,7 @@ export function About() {
             .then(data => {
                 if (data.stats) {
                     setStats(prev => prev.map(s => {
-                        if (s.label === "Blog Posts") return { ...s, value: `${data.stats.total}+` };
+                        if (s.label === "Blog posts") return { ...s, value: `${data.stats.total}+` };
                         return s;
                     }));
                 }
@@ -47,18 +44,18 @@ export function About() {
             <div className="container px-4 mx-auto">
                 <div className="grid lg:grid-cols-2 gap-16 items-center">
                     <motion.div
-                        initial={{ opacity: 0, x: -20 }}
-                        whileInView={{ opacity: 1, x: 0 }}
+                        initial={false}
+                        whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: true }}
-                        transition={{ duration: 0.5 }}
+                        transition={{ duration: 0.45 }}
                     >
-                        <h2 className="text-3xl md:text-5xl font-black mb-8">
-                            A Deep Dive into <span className="text-gradient">Systems Engineering</span>
+                        <h2 className="mb-8 text-3xl font-medium tracking-tight md:text-5xl">
+                            Below the abstractions
                         </h2>
                         <div className="space-y-6 text-lg text-muted-foreground">
                             <p>
                                 My journey into low-level programming started with a simple question:
-                                "How does the hardware actually talk to the software?" This curiosity led me
+                                how does the hardware actually talk to the software? This curiosity led me
                                 down the hole of kernel development, memory management, and processor architectures.
                             </p>
                             <p>
@@ -74,22 +71,21 @@ export function About() {
                         </div>
                     </motion.div>
 
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 gap-6 sm:grid-cols-3">
                         {stats.map((stat, index) => (
                             <motion.div
                                 key={stat.label}
-                                initial={{ opacity: 0, y: 20 }}
+                                initial={false}
                                 whileInView={{ opacity: 1, y: 0 }}
                                 viewport={{ once: true }}
                                 transition={{ duration: 0.5, delay: index * 0.1 }}
                             >
-                                <Card className="glass border-none shadow-none">
-                                    <CardContent className="p-6 flex flex-col items-center text-center">
-                                        <stat.icon className={`w-8 h-8 ${stat.color} mb-4`} />
-                                        <span className="text-3xl font-bold mb-1">{stat.value}</span>
-                                        <span className="text-sm text-muted-foreground">{stat.label}</span>
-                                    </CardContent>
-                                </Card>
+                                <div className="border-t border-border pt-4">
+                                    <span className="block text-3xl font-medium tabular-nums tracking-tight">
+                                        {stat.value}
+                                    </span>
+                                    <span className="mt-1 block text-sm text-muted-foreground">{stat.label}</span>
+                                </div>
                             </motion.div>
                         ))}
                     </div>

@@ -10,20 +10,22 @@ export async function GET() {
     const username = process.env.NEXT_PUBLIC_GITHUB_USERNAME || "mohitmishra786";
 
     try {
-        const data = await getCachedData(`github-${username}-v3`, async () => {
+        const data = await getCachedData(`github-${username}-v4`, async () => {
             const { data: repos } = await octokit.repos.listForUser({
                 username,
                 sort: "updated",
                 per_page: 100,
             });
 
-            // Calculate stats
-            const totalStars = repos.reduce((acc, repo) => acc + (repo.stargazers_count || 0), 0);
-            const totalProjects = repos.length;
+            // Private repositories 404 for visitors, so the public site only lists public ones.
+            const publicRepos = repos.filter((repo) => !repo.private);
 
-            const topStarred = [...repos].sort((a, b) => (b.stargazers_count || 0) - (a.stargazers_count || 0)).slice(0, 4);
-            const mostForked = [...repos].sort((a, b) => (b.forks_count || 0) - (a.forks_count || 0)).slice(0, 4);
-            const recentlyWorked = [...repos].sort((a, b) => new Date(b.pushed_at || "").getTime() - new Date(a.pushed_at || "").getTime()).slice(0, 4);
+            const totalStars = publicRepos.reduce((acc, repo) => acc + (repo.stargazers_count || 0), 0);
+            const totalProjects = publicRepos.length;
+
+            const topStarred = [...publicRepos].sort((a, b) => (b.stargazers_count || 0) - (a.stargazers_count || 0)).slice(0, 4);
+            const mostForked = [...publicRepos].sort((a, b) => (b.forks_count || 0) - (a.forks_count || 0)).slice(0, 4);
+            const recentlyWorked = [...publicRepos].sort((a, b) => new Date(b.pushed_at || "").getTime() - new Date(a.pushed_at || "").getTime()).slice(0, 5);
 
             // Fetch recent events and filter for quality contributions
             const { data: rawEvents } = await octokit.activity.listPublicEventsForUser({
@@ -36,7 +38,8 @@ export async function GET() {
                 .slice(0, 5)
                 .map(event => {
                     const isPush = event.type === "PushEvent";
-                    const commit = isPush ? (event.payload as any).commits?.[0] : null;
+                    const payload = event.payload as { commits?: { message?: string; sha?: string }[] } | null;
+                    const commit = isPush ? payload?.commits?.[0] : null;
 
                     return {
                         id: event.id,
@@ -55,7 +58,7 @@ export async function GET() {
                 stats: {
                     stars: totalStars,
                     projects: totalProjects,
-                    commits: "2.4k+",
+                    commits: null,
                 },
                 topStarred,
                 mostForked,

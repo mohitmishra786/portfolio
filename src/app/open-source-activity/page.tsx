@@ -6,7 +6,7 @@ import { LatestContributions } from "@/components/sections/LatestContributions";
 
 export default function ProjectsPage() {
     return (
-        <div className="pt-32 pb-20">
+        <div className="pt-24 pb-20">
             <div className="container px-4 mx-auto">
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
@@ -14,7 +14,7 @@ export default function ProjectsPage() {
                     className="text-center mb-16"
                 >
                     <h1 className="text-4xl md:text-6xl font-black mb-4">
-                        Projects & <span className="text-gradient">Research</span>
+                        Projects and research
                     </h1>
                     <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
                         A comprehensive look at my open-source contributions and personal research projects.

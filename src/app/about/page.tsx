@@ -44,31 +44,31 @@ const skillGroups = [
         title: "Programming Languages",
         icon: Code2,
         items: mohit.code,
-        color: "text-blue-400"
+        color: "text-primary"
     },
     {
         title: "Frontend Engineering",
         icon: Globe,
         items: mohit.technologies.frontend,
-        color: "text-emerald-400"
+        color: "text-primary"
     },
     {
         title: "Backend & Systems",
         icon: Cpu,
         items: mohit.technologies.backend,
-        color: "text-purple-400"
+        color: "text-primary"
     },
     {
         title: "AI & Data Science",
         icon: BrainCircuit,
         items: mohit.technologies.machineLearning,
-        color: "text-orange-400"
+        color: "text-primary"
     }
 ];
 
 export default function AboutPage() {
     return (
-        <div className="pt-32 pb-20">
+        <div className="pt-24 pb-20">
             <div className="container px-4 mx-auto">
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
@@ -77,7 +77,7 @@ export default function AboutPage() {
                 >
                     <div className="text-center mb-16">
                         <h1 className="text-4xl md:text-6xl font-black mb-4">
-                            Beyond the <span className="text-gradient">Source Code</span>
+                            Beyond the source code
                         </h1>
                         <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
                             I&apos;m Mohit Mishra, a software engineer obsessed with performance,
