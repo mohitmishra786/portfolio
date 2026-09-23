@@ -21,13 +21,17 @@ export function Work() {
                                 rel="noopener noreferrer"
                                 className="group grid gap-3 py-7 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring md:grid-cols-12 md:items-baseline md:gap-8"
                             >
-                                <div className="md:col-span-3">
-                                    <p className="text-3xl font-medium tabular-nums tracking-tight text-primary">
-                                        {project.metric?.value}
-                                    </p>
-                                    <p className="mt-1 text-sm text-muted-foreground">
-                                        {project.metric?.label}
-                                    </p>
+                                <div className="flex flex-wrap gap-x-8 gap-y-3 md:col-span-3 md:block">
+                                    {(project.metrics ?? (project.metric ? [project.metric] : [])).map((figure) => (
+                                        <div key={figure.label} className="md:mt-4 md:first:mt-0">
+                                            <p className="text-3xl font-medium tabular-nums tracking-tight text-primary">
+                                                {figure.value}
+                                            </p>
+                                            <p className="mt-1 text-sm text-muted-foreground">
+                                                {figure.label}
+                                            </p>
+                                        </div>
+                                    ))}
                                 </div>
                                 <div className="md:col-span-8">
                                     <h3 className="text-xl font-medium tracking-tight group-hover:text-primary md:text-2xl">

@@ -149,14 +149,26 @@ export default function AboutPage() {
                             {[
                                 {
                                     company: "Outpayce from Amadeus",
-                                    role: "Software Developer",
-                                    period: "Jul 2023 - Present",
-                                    duration: "2 yrs 7 mos",
-                                    location: "Bengaluru, Karnataka, India · Hybrid",
+                                    role: "Software Engineer 2",
+                                    period: "Jan 2026 - Present",
+                                    duration: "9 mos",
+                                    location: "Bengaluru, Karnataka, India",
+                                    mode: "On-site",
                                     desc: [
-                                        "Demonstrated strong learning agility by quickly grasping core functionalities written in C++ and SQL used in the payment processing system.",
-                                        "Developed innovative improvements to functionalities, streamlining processes and minimizing the need for manual work.",
-                                        "Optimized job performance and addressed escalated production issues through code enhancements."
+                                        "Software Engineer 2 on the payments platform, on-site in Bengaluru."
+                                    ]
+                                },
+                                {
+                                    company: "Outpayce from Amadeus",
+                                    role: "Software Developer",
+                                    period: "Jul 2023 - Jan 2026",
+                                    duration: "2 yrs 7 mos",
+                                    location: "Bengaluru, Karnataka, India",
+                                    mode: "Hybrid",
+                                    desc: [
+                                        "Learned the C++ and SQL core of the payment processing system quickly, then improved those paths.",
+                                        "Reduced manual work by streamlining payment functionality.",
+                                        "Improved job performance and fixed escalated production issues in code."
                                     ],
                                     skills: ["C++", "SQL", "Agile Methodologies", "Data Structures", "Algorithms", "Microservices", "DBMS"]
                                 },
@@ -165,11 +177,12 @@ export default function AboutPage() {
                                     role: "Software Developer Intern",
                                     period: "Feb 2023 - Jul 2023",
                                     duration: "6 mos",
+                                    location: "Bengaluru, Karnataka, India",
+                                    mode: "Hybrid",
                                     desc: [
-                                        "Implemented AngularJS to revamp the Credit Card Tokenization System.",
-                                        "Integrated REST API for secure and efficient credit card data handling.",
-                                        "Implemented validation procedures using Jasmine and Karma for thorough testing and issue detection.",
-                                        "Contributed to developing microservices using Quarkus for optimized performance and scalability."
+                                        "Worked on frontend development, API integration, unit testing, and microservices.",
+                                        "Improved the credit card tokenization system with AngularJS and REST APIs.",
+                                        "Added Jasmine and Karma checks, and contributed Quarkus microservices."
                                     ],
                                     skills: ["REST APIs", "AngularJS", "Docker", "Kubernetes", "Microservices", "Quarkus", "Kafka", "Java"]
                                 },
@@ -233,10 +246,11 @@ export default function AboutPage() {
 
                                     <div className="text-lg font-medium text-white/80 mb-1">{item.company}</div>
 
-                                    {(item.location || item.duration) && (
-                                        <div className="text-xs text-muted-foreground mb-4 flex gap-3">
+                                    {(item.location || item.duration || item.mode) && (
+                                        <div className="mb-4 flex flex-wrap gap-x-3 gap-y-1 text-xs text-muted-foreground">
                                             {item.location && <span className="flex items-center gap-1"><Globe className="w-3 h-3" /> {item.location}</span>}
-                                            {item.duration && <span>• {item.duration}</span>}
+                                            {item.mode && <span>{item.mode}</span>}
+                                            {item.duration && <span>{item.duration}</span>}
                                         </div>
                                     )}
 

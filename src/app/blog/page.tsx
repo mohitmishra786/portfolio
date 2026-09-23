@@ -16,7 +16,7 @@ export default function BlogPage() {
                         Technical articles
                     </h1>
                     <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-                        Deep dives into low-level engineering, systems programming, and more.
+                        Recent essays from Low-Level Lore on Substack, TheCoreDump, and Medium.
                     </p>
                 </motion.div>
 

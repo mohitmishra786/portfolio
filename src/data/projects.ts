@@ -42,6 +42,8 @@ export interface Project {
     repoPublic?: boolean;
     /** Headline figure for featured rows. */
     metric?: { value: string; label: string };
+    /** Extra figures shown beside the headline metric. */
+    metrics?: { value: string; label: string }[];
 }
 
 export const PROJECTS: Project[] = [
@@ -101,9 +103,9 @@ export const PROJECTS: Project[] = [
     {
         id: "low-level-dev-skills",
         title: "Low-Level Dev Skills",
-        tagline: "Agent skills for C, C++, Rust, and Zig toolchains",
+        tagline: "142 agent skills for C, C++, Rust, and Zig. 226 GitHub stars.",
         description:
-            "A curated suite of AI agent skills for systems and low-level programming, covering compilers, debuggers, profilers, build systems, sanitizers, and binary analysis across C, C++, Rust, and Zig. Published at lowleveldevskills.com.",
+            "A curated suite of AI agent skills for systems and low-level programming, covering compilers, debuggers, profilers, build systems, sanitizers, and binary analysis across C, C++, Rust, and Zig. 51.1k installs on skills.sh, and 226 GitHub stars. Published at lowleveldevskills.com.",
         stack: "C/C++, Rust, Zig, Compilers, Debuggers, Profilers",
         category: "developer-tooling",
         homepage: "https://www.lowleveldevskills.com",
@@ -112,8 +114,12 @@ export const PROJECTS: Project[] = [
         stars: 226,
         forks: 28,
         featured: true,
-        highlights: ["226 stars", "28 forks"],
-        metric: { value: "226", label: "GitHub stars" },
+        highlights: ["226 stars", "51.1k installs", "142 skills"],
+        metric: { value: "51.1k", label: "installs" },
+        metrics: [
+            { value: "51.1k", label: "installs" },
+            { value: "226", label: "GitHub stars" },
+        ],
         order: 85,
     },
     {

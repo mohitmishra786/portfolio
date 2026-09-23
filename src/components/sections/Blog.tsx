@@ -1,12 +1,8 @@
 "use client";
 
-import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Calendar, Clock, ArrowRight, ExternalLink } from "lucide-react";
+import { ArrowUpRight } from "lucide-react";
 import { format } from "date-fns";
-import { Button } from "@/components/ui/button";
 
 interface BlogPost {
     title: string;
@@ -14,123 +10,129 @@ interface BlogPost {
     pubDate: string;
     contentSnippet: string;
     source: string;
-    image?: string;
 }
 
 interface BlogProps {
     hideHeader?: boolean;
 }
 
+const publications = [
+    { name: "Low-Level Lore", url: "https://chessman7.substack.com" },
+    { name: "TheCoreDump", url: "https://mohitmishra786.github.io/TheCoreDump/" },
+    { name: "Medium", url: "https://medium.com/@mohitmishra786687" },
+    { name: "X", url: "https://x.com/chessMan786/articles" },
+];
+
+function formatDate(value: string): string {
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return "";
+    return format(date, "MMM d, yyyy");
+}
+
 export function Blog({ hideHeader = false }: BlogProps) {
     const [posts, setPosts] = useState<BlogPost[]>([]);
+    const [counts, setCounts] = useState<Record<string, number>>({});
     const [loading, setLoading] = useState(true);
+    const [failed, setFailed] = useState(false);
 
     useEffect(() => {
         fetch("/api/blog")
-            .then((res) => res.json())
+            .then((res) => {
+                if (!res.ok) throw new Error(String(res.status));
+                return res.json();
+            })
             .then((data) => {
-                setPosts(data.posts?.slice(0, 4) || []);
+                setPosts(Array.isArray(data.posts) ? data.posts.slice(0, 8) : []);
+                setCounts(data.stats?.counts ?? {});
                 setLoading(false);
             })
-            .catch(err => {
+            .catch((err) => {
                 console.error("Blog fetch error:", err);
+                setFailed(true);
                 setLoading(false);
             });
     }, []);
 
-    const publications = [
-        { name: "TheCoreDump", url: "https://mohitmishra786.github.io/TheCoreDump/" },
-        { name: "Low-Level-Lore (Substack)", url: "https://chessman7.substack.com" },
-        { name: "Medium", url: "https://medium.com/@mohitmishra786687" },
-        { name: "X Articles", url: "https://x.com/chessMan786/articles" },
-    ];
+    const substackCount = counts.Substack ?? 0;
 
     return (
-        <section id="blog" className="py-24">
-            <div className="container px-4 mx-auto">
+        <section id="blog" className="py-20">
+            <div className="mx-auto max-w-6xl px-4">
                 {!hideHeader && (
-                    <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: true }}
-                        transition={{ duration: 0.5 }}
-                        className="text-center mb-16"
-                    >
-                        <h2 className="text-3xl md:text-5xl font-black mb-4">
+                    <div className="max-w-3xl">
+                        <h2 className="text-3xl font-medium tracking-tight md:text-4xl">
                             Technical articles
                         </h2>
-                        <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-                            Thoughts on systems programming, OS development, and the low-level details of software.
+                        <p className="mt-3 max-w-[62ch] text-muted-foreground">
+                            Recent essays from Low-Level Lore on Substack, TheCoreDump, and Medium.
                         </p>
-                    </motion.div>
+                    </div>
                 )}
 
-                <div className="grid md:grid-cols-2 gap-8">
-                    {loading ? (
-                        Array(4).fill(0).map((_, i) => (
-                            <div key={i} className="h-[250px] bg-white/5 animate-pulse rounded-2xl" />
-                        ))
-                    ) : (
-                        posts.map((post, index) => (
-                            <motion.div
-                                key={post.link}
-                                initial={{ opacity: 0, y: 20 }}
-                                whileInView={{ opacity: 1, y: 0 }}
-                                viewport={{ once: true }}
-                                transition={{ duration: 0.5, delay: index * 0.1 }}
+                <ul className="mt-6 flex flex-wrap gap-x-5 gap-y-2 text-sm">
+                    {publications.map((publication) => (
+                        <li key={publication.url}>
+                            <a
+                                href={publication.url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-muted-foreground hover:text-primary"
                             >
-                                <Card className="glass border-none h-full hover:bg-white/5 transition-all group cursor-pointer overflow-hidden">
-                                    <CardHeader>
-                                        <div className="flex justify-between items-center mb-4">
-                                            <Badge variant="outline" className="bg-primary/5 text-primary border-primary/20">
-                                                {post.source}
-                                            </Badge>
-                                            <div className="flex items-center gap-4 text-xs text-muted-foreground">
-                                                <div className="flex items-center gap-1">
-                                                    <Clock className="w-3 h-3" />
-                                                    {format(new Date(post.pubDate), "MMM d, yyyy")}
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <CardTitle className="text-2xl font-black group-hover:text-primary transition-colors leading-tight">
-                                            {post.title}
-                                        </CardTitle>
-                                    </CardHeader>
-                                    <CardContent>
-                                        <p className="text-muted-foreground line-clamp-2">
-                                            {post.contentSnippet.replace(/<[^>]*>?/gm, "")}
-                                        </p>
-                                    </CardContent>
-                                    <CardFooter className="pt-4">
-                                        <a
-                                            href={post.link}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            className="text-primary font-bold flex items-center gap-2 group/link"
-                                        >
-                                            Read Article
-                                            <ArrowRight className="w-4 h-4 transition-transform group-hover/link:translate-x-1" />
-                                        </a>
-                                    </CardFooter>
-                                </Card>
-                            </motion.div>
-                        ))
-                    )}
-                </div>
+                                {publication.name}
+                            </a>
+                        </li>
+                    ))}
+                </ul>
 
-                <div className="mt-24">
-                    <h3 className="text-2xl font-bold text-center mb-8">Explore My Publications</h3>
-                    <div className="flex flex-wrap justify-center gap-4">
-                        {publications.map((pub) => (
-                            <Button key={pub.name} variant="outline" className="rounded-full gap-2 transition-all hover:bg-primary/10 hover:border-primary/50" asChild>
-                                <a href={pub.url} target="_blank" rel="noopener noreferrer">
-                                    {pub.name}
-                                    <ExternalLink className="w-4 h-4" />
-                                </a>
-                            </Button>
+                {loading ? (
+                    <ul className="mt-8 divide-y divide-border border-y border-border">
+                        {Array.from({ length: 4 }).map((_, index) => (
+                            <li key={index} className="py-5">
+                                <div className="h-5 w-2/3 animate-pulse rounded bg-muted" />
+                                <div className="mt-2 h-4 w-1/3 animate-pulse rounded bg-muted" />
+                            </li>
                         ))}
-                    </div>
-                </div>
+                    </ul>
+                ) : failed || posts.length === 0 ? (
+                    <p className="mt-8 text-sm text-muted-foreground">
+                        Articles are unavailable right now. Read Low-Level Lore directly on Substack.
+                    </p>
+                ) : (
+                    <ul className="mt-8 divide-y divide-border border-y border-border">
+                        {posts.map((post) => (
+                            <li key={post.link}>
+                                <a
+                                    href={post.link}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="group grid gap-2 py-5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring sm:grid-cols-[9rem_1fr_auto] sm:items-baseline sm:gap-6"
+                                >
+                                    <span className="text-sm text-primary">{post.source}</span>
+                                    <span>
+                                        <span className="block font-medium group-hover:text-primary">
+                                            {post.title}
+                                        </span>
+                                        {post.contentSnippet && (
+                                            <span className="mt-1 block max-w-[68ch] text-sm text-muted-foreground">
+                                                {post.contentSnippet}
+                                            </span>
+                                        )}
+                                    </span>
+                                    <span className="inline-flex items-center gap-2 text-sm text-muted-foreground">
+                                        {formatDate(post.pubDate)}
+                                        <ArrowUpRight className="size-4 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-primary" />
+                                    </span>
+                                </a>
+                            </li>
+                        ))}
+                    </ul>
+                )}
+
+                {!loading && !failed && substackCount === 0 && (
+                    <p className="mt-4 text-sm text-muted-foreground">
+                        The Substack feed did not return articles on this load.
+                    </p>
+                )}
             </div>
         </section>
     );
