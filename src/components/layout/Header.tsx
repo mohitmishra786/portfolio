@@ -22,7 +22,7 @@ export function Header() {
     }, [open]);
 
     return (
-        <header className="fixed top-0 inset-x-0 z-40 border-b border-border bg-background/85 backdrop-blur-md">
+        <header className="fixed top-0 inset-x-0 z-40 border-b border-border bg-background">
             <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-4 px-4">
                 <Link
                     href="/"

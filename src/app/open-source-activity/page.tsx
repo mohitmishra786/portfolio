@@ -1,32 +1,20 @@
-"use client";
-
-import { motion } from "framer-motion";
 import { Projects } from "@/components/sections/Projects";
 import { LatestContributions } from "@/components/sections/LatestContributions";
 
-export default function ProjectsPage() {
+export default function OpenSourceActivityPage() {
     return (
-        <div className="pt-24 pb-20">
-            <div className="container px-4 mx-auto">
-                <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="text-center mb-16"
-                >
-                    <h1 className="text-4xl md:text-6xl font-black mb-4">
-                        Projects and research
-                    </h1>
-                    <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-                        A comprehensive look at my open-source contributions and personal research projects.
-                    </p>
-                </motion.div>
+        <div className="mx-auto max-w-6xl px-4 pt-24 pb-20">
+            <div className="max-w-3xl">
+                <h1 className="text-4xl font-medium tracking-tight md:text-5xl">
+                    Open source activity
+                </h1>
+                <p className="mt-4 max-w-full text-lg text-muted-foreground sm:max-w-[58ch]">
+                    Recent public pushes, plus the repositories people star and fork.
+                </p>
             </div>
 
             <LatestContributions />
-
-            <div className="container px-4 mx-auto mt-12">
-                <Projects hideHeader={true} />
-            </div>
+            <Projects hideHeader />
         </div>
     );
 }
