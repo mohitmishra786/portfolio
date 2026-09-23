@@ -14,45 +14,108 @@ export interface BlogPost {
     image?: string;
 }
 
-export async function getBlogPosts() {
-    const feeds = [
-        { name: "Substack", url: "https://chessman7.substack.com/feed" },
-        { name: "Medium", url: "https://medium.com/feed/@mohitmishra786687" },
-        { name: "TheCoreDump", url: "https://mohitmishra786.github.io/TheCoreDump/feed.xml" },
-    ];
+const feeds = [
+    { name: "Substack", url: "https://chessman7.substack.com/feed" },
+    { name: "Medium", url: "https://medium.com/feed/@mohitmishra786687" },
+    { name: "TheCoreDump", url: "https://mohitmishra786.github.io/TheCoreDump/feed.xml" },
+];
 
-    const allPosts: BlogPost[] = [];
+function asText(value: unknown): string {
+    if (typeof value === "string") return value.trim();
+    if (typeof value === "number") return String(value);
+    if (Array.isArray(value)) return asText(value[0]);
+    if (value && typeof value === "object") {
+        const record = value as Record<string, unknown>;
+        if (typeof record["#text"] === "string") return record["#text"].trim();
+        if (typeof record["__cdata"] === "string") return record["__cdata"].trim();
+    }
+    return "";
+}
 
-    for (const feed of feeds) {
-        try {
-            const response = await fetch(feed.url);
-            const xmlText = await response.text();
-            const jsonObj = parser.parse(xmlText);
+function asLink(value: unknown): string {
+    if (typeof value === "string") return value.trim();
+    if (Array.isArray(value)) {
+        const href = value.find((entry) => asLink(entry).startsWith("http"));
+        return href ? asLink(href) : asLink(value[0]);
+    }
+    if (value && typeof value === "object") {
+        const record = value as Record<string, unknown>;
+        if (typeof record["@_href"] === "string") return record["@_href"].trim();
+        return asText(value);
+    }
+    return "";
+}
 
-            const channel = jsonObj.rss?.channel || jsonObj.feed;
-            const items = channel?.item || jsonObj.feed?.entry || [];
-            const normalizedItems = Array.isArray(items) ? items : [items];
+function snippetFrom(item: Record<string, unknown>): string {
+    const raw = asText(item.description) || asText(item.summary) || asText(item["content:encoded"]);
+    return raw.replace(/<[^>]*>?/gm, " ").replace(/\s+/g, " ").trim().slice(0, 180);
+}
 
-            const posts = normalizedItems.map((item: any) => {
-                const title = item.title?.["#text"] || item.title || "Untitled";
-                const link = item.link?.["@_href"] || item.link || "#";
-                const pubDate = item.pubDate || item.published || item.updated || new Date().toISOString();
-                const contentSnippet = item.description || item.summary || item.contentSnippet || "";
+async function fetchFeed(feed: { name: string; url: string }): Promise<BlogPost[]> {
+    const response = await fetch(feed.url, {
+        headers: {
+            Accept: "application/rss+xml, application/atom+xml, application/xml, text/xml;q=0.9, */*;q=0.8",
+            "User-Agent": "Mozilla/5.0 (compatible; PortfolioBot/1.0; +https://www.mohitmishra7.com)",
+        },
+        signal: AbortSignal.timeout(12000),
+        next: { revalidate: 1800 },
+    });
 
-                return {
-                    title,
-                    link,
-                    pubDate,
-                    contentSnippet: typeof contentSnippet === "string" ? contentSnippet.replace(/<[^>]*>?/gm, "").slice(0, 160) : "",
-                    source: feed.name,
-                    image: item.enclosure?.["@_url"] || item["media:content"]?.["@_url"],
-                };
-            });
-            allPosts.push(...posts);
-        } catch (error) {
-            console.error(`Error fetching feed from ${feed.name}:`, error);
-        }
+    if (!response.ok) {
+        throw new Error(`${feed.name} returned ${response.status}`);
     }
 
-    return allPosts.sort((a, b) => new Date(b.pubDate).getTime() - new Date(a.pubDate).getTime());
+    const xmlText = await response.text();
+    if (!xmlText.includes("<rss") && !xmlText.includes("<feed")) {
+        throw new Error(`${feed.name} did not return a feed`);
+    }
+
+    const jsonObj = parser.parse(xmlText) as {
+        rss?: { channel?: { item?: unknown } };
+        feed?: { entry?: unknown };
+    };
+    const channel = jsonObj.rss?.channel;
+    const rawItems = channel?.item || jsonObj.feed?.entry || [];
+    const items = (Array.isArray(rawItems) ? rawItems : [rawItems]).filter(Boolean);
+
+    return items.flatMap((entry) => {
+        const item = entry as Record<string, unknown>;
+        const title = asText(item.title);
+        const link = asLink(item.link) || asLink(item.guid);
+        const pubDate = asText(item.pubDate) || asText(item.published) || asText(item.updated);
+        if (!title || !link.startsWith("http") || Number.isNaN(new Date(pubDate).getTime())) {
+            return [];
+        }
+        const enclosure = item.enclosure as Record<string, unknown> | undefined;
+        const media = item["media:content"] as Record<string, unknown> | undefined;
+        return [{
+            title,
+            link,
+            pubDate,
+            contentSnippet: snippetFrom(item),
+            source: feed.name,
+            image: asText(enclosure?.["@_url"]) || asText(media?.["@_url"]) || undefined,
+        }];
+    });
+}
+
+export async function getBlogPosts(): Promise<BlogPost[]> {
+    const results = await Promise.all(feeds.map(async (feed) => {
+        try {
+            return await fetchFeed(feed);
+        } catch (error) {
+            console.error(`Error fetching feed from ${feed.name}:`, error);
+            return [];
+        }
+    }));
+
+    const seen = new Set<string>();
+    return results
+        .flat()
+        .filter((post) => {
+            if (seen.has(post.link)) return false;
+            seen.add(post.link);
+            return true;
+        })
+        .sort((a, b) => new Date(b.pubDate).getTime() - new Date(a.pubDate).getTime());
 }

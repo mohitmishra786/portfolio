@@ -18,34 +18,35 @@ export default function UnsubscribeSuccess() {
     };
 
     return (
-        <div className="min-h-screen bg-black flex items-center justify-center p-4 font-mono">
+        <div className="flex min-h-[100dvh] items-center justify-center p-4 pt-24">
             <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="max-w-md w-full glass p-8 rounded-3xl border border-white/10 text-center"
+                className="w-full max-w-md rounded-xl border border-border bg-card p-8 text-center"
             >
                 <div className="w-20 h-20 bg-emerald-500/10 rounded-full flex items-center justify-center mx-auto mb-6">
                     <CheckCircle className="w-10 h-10 text-emerald-500" />
                 </div>
 
-                <h1 className="text-3xl font-black mb-4 text-white">Unsubscribed</h1>
+                <h1 className="mb-4 text-3xl font-medium tracking-tight">Unsubscribed</h1>
                 <p className="text-muted-foreground mb-8">
-                    You have been successfully removed from our updates list. We're sorry to see you go!
+                    You have been removed from the updates list.
                 </p>
 
                 {!submitted ? (
                     <form onSubmit={handleFeedback} className="text-left space-y-4 mb-8">
-                        <label className="text-xs text-muted-foreground uppercase tracking-widest ml-1">
-                            Optional Feedback
+                        <label htmlFor="unsubscribe-feedback" className="text-sm font-medium">
+                            Optional feedback
                         </label>
                         <textarea
+                            id="unsubscribe-feedback"
                             value={feedback}
                             onChange={(e) => setFeedback(e.target.value)}
-                            placeholder="Tell us why you're leaving..."
-                            className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-sm focus:outline-none focus:ring-1 focus:ring-primary/50 min-h-[100px] resize-none"
+                            placeholder="Why did you unsubscribe?"
+                            className="min-h-[100px] w-full resize-none rounded-md border border-input bg-background p-4 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
                         />
-                        <Button type="submit" className="w-full rounded-full bg-white/10 hover:bg-white/20 text-white border-white/10">
-                            Send Feedback
+                        <Button type="submit" className="w-full">
+                            Send feedback
                         </Button>
                     </form>
                 ) : (

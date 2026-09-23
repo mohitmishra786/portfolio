@@ -56,23 +56,19 @@ export function Newsletter() {
     };
 
     return (
-        <section id="newsletter" className="py-24 bg-primary/5 relative overflow-hidden">
-            {/* Decorative blobs */}
-            <div className="absolute top-0 right-0 w-96 h-96 bg-primary/10 blur-[100px] rounded-full -translate-y-1/2 translate-x-1/2" />
-            <div className="absolute bottom-0 left-0 w-96 h-96 bg-accent-cyan/10 blur-[100px] rounded-full translate-y-1/2 -translate-x-1/2" />
-
-            <div className="container px-4 mx-auto max-w-4xl text-center relative z-10 font-mono">
+        <section id="newsletter" className="py-24">
+            <div className="container relative z-10 mx-auto max-w-xl px-4">
                 <motion.div
-                    initial={{ opacity: 0, scale: 0.95 }}
-                    whileInView={{ opacity: 1, scale: 1 }}
+                    initial={{ opacity: 0, y: 12 }}
+                    whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
-                    className="glass p-12 rounded-3xl border border-white/10"
+                    className="rounded-xl border border-border bg-card p-8 md:p-10"
                 >
                     <div className="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center mx-auto mb-8">
                         <Mail className="w-8 h-8 text-primary" />
                     </div>
 
-                    <h2 className="text-3xl md:text-5xl font-black mb-4">Stay <span className="text-gradient">Updated</span></h2>
+                    <h2 className="mb-4 text-3xl font-medium tracking-tight md:text-4xl">Newsletter</h2>
                     <p className="text-muted-foreground text-lg mb-10 max-w-xl mx-auto">
                         Get notified when I publish new articles about systems programming,
                         OS development, and low-level engineering.
@@ -108,13 +104,18 @@ export function Newsletter() {
                                         autoComplete="off"
                                     />
 
-                                    <div className="flex flex-col md:flex-row gap-4">
-                                        <div className="flex-1">
+                                    <div className="flex flex-col gap-4 md:flex-row md:items-end">
+                                        <div className="flex-1 text-left">
+                                            <label htmlFor="newsletter-email" className="mb-2 block text-sm font-medium">
+                                                Email
+                                            </label>
                                             <Input
+                                                id="newsletter-email"
                                                 {...register("email")}
                                                 type="email"
-                                                placeholder="user@kernel.org"
-                                                className={`rounded-full bg-white/5 border-white/10 h-12 px-6 focus:ring-primary/50 ${errors.email ? "border-red-500/50" : ""
+                                                placeholder="you@example.com"
+                                                autoComplete="email"
+                                                className={`h-12 bg-background px-4 text-foreground placeholder:text-muted-foreground ${errors.email ? "border-destructive" : ""
                                                     }`}
                                                 disabled={status === "loading"}
                                             />
@@ -122,7 +123,7 @@ export function Newsletter() {
                                         <Button
                                             type="submit"
                                             size="lg"
-                                            className="rounded-full px-8 h-12 font-bold bg-primary hover:bg-primary/90 text-black"
+                                            className="h-12 w-full px-6 md:w-auto"
                                             disabled={status === "loading"}
                                         >
                                             {status === "loading" ? (

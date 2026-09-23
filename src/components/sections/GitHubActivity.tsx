@@ -35,7 +35,7 @@ export function GitHubActivity() {
                     className="text-center mb-16"
                 >
                     <h2 className="text-3xl md:text-5xl font-black mb-4">
-                        Code & <span className="text-gradient">Contributions</span>
+                        Code and contributions
                     </h2>
                     <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
                         My daily journey through the bits and bytes of systems development.

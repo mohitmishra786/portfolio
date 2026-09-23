@@ -1,74 +1,22 @@
 import { NextResponse } from "next/server";
-import { XMLParser } from "fast-xml-parser";
 import { getCachedData } from "@/lib/cache";
-
-const parser = new XMLParser({
-    ignoreAttributes: false,
-    attributeNamePrefix: "@_",
-});
-
-const feeds = [
-    { name: "Substack", url: "https://chessman7.substack.com/feed", defaultCount: 51 },
-    { name: "Medium", url: "https://medium.com/feed/@mohitmishra786687", defaultCount: 90 },
-    { name: "TheCoreDump", url: "https://mohitmishra786.github.io/TheCoreDump/feed.xml", defaultCount: 89 },
-];
+import { getBlogPosts } from "@/lib/api/blogs";
 
 export async function GET() {
     try {
-        const data = await getCachedData("blog-feeds", async () => {
-            const allPosts: any[] = [];
-            const counts: Record<string, number> = {
-                "Substack": 51,
-                "Medium": 90,
-                "TheCoreDump": 89,
-                "X Articles": 68
-            };
-
-            for (const feed of feeds) {
-                try {
-                    const response = await fetch(feed.url);
-                    const xmlText = await response.text();
-                    const jsonObj = parser.parse(xmlText);
-
-                    // Support for both RSS 2.0 (channel.item) and Atom (feed.entry)
-                    const channel = jsonObj.rss?.channel || jsonObj.feed;
-                    const items = channel?.item || jsonObj.feed?.entry || [];
-                    const normalizedItems = Array.isArray(items) ? items : [items];
-
-                    counts[feed.name] = Math.max(feed.defaultCount, normalizedItems.length);
-
-                    const posts = normalizedItems.map((item: any) => {
-                        // Handle different tag names for RSS vs Atom
-                        const title = item.title?.["#text"] || item.title || "Untitled";
-                        const link = item.link?.["@_href"] || item.link || "#";
-                        const pubDate = item.pubDate || item.published || item.updated || new Date().toISOString();
-                        const contentSnippet = item.description || item.summary || item.contentSnippet || "";
-
-                        return {
-                            title,
-                            link,
-                            pubDate,
-                            contentSnippet: typeof contentSnippet === "string" ? contentSnippet.replace(/<[^>]*>?/gm, "").slice(0, 160) : "",
-                            source: feed.name,
-                            image: item.enclosure?.["@_url"] || item["media:content"]?.["@_url"],
-                        };
-                    });
-
-                    allPosts.push(...posts);
-                } catch (error) {
-                    console.error(`Error fetching ${feed.name}:`, error);
-                }
+        const data = await getCachedData("blog-feeds-v2", async () => {
+            const posts = await getBlogPosts();
+            const counts: Record<string, number> = {};
+            for (const post of posts) {
+                counts[post.source] = (counts[post.source] ?? 0) + 1;
             }
 
-            const totalPosts = Object.values(counts).reduce((a, b) => a + b, 0);
-            const sortedPosts = allPosts.sort((a, b) => new Date(b.pubDate).getTime() - new Date(a.pubDate).getTime());
-
             return {
-                posts: sortedPosts,
+                posts,
                 stats: {
                     counts,
-                    total: totalPosts
-                }
+                    total: posts.length,
+                },
             };
         });
 

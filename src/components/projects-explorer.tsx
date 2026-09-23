@@ -66,77 +66,61 @@ export function ProjectsExplorer({ projects }: { projects: Project[] }) {
     const rest = useMemo(() => {
         const base = NON_FEATURED_PROJECTS.map(merge);
         if (filter === "all") return base;
-        return base.filter((p) => p.category === filter);
+        return projects
+            .filter((p) => p.category === filter)
+            .sort((a, b) => (b.order ?? 0) - (a.order ?? 0));
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [byId, filter]);
+    }, [byId, filter, projects]);
 
     return (
         <>
-            <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="text-center mb-16"
-            >
-                <h1 className="text-4xl md:text-6xl font-black mb-6">
-                    Featured <span className="text-gradient">Projects</span>
+            <div className="mb-12 max-w-3xl">
+                <h1 className="text-4xl font-medium tracking-tight md:text-6xl">
+                    Projects
                 </h1>
-                <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-                    A collection of tools, libraries, and applications I&apos;ve built —
-                    spanning systems programming, developer tooling, AI, and the web.
+                <p className="mt-4 max-w-[58ch] text-lg text-muted-foreground">
+                    Learning sites, developer tools, and systems projects. Private repositories stay unlinked. The sites are public.
                 </p>
-            </motion.div>
-
-            <div className="flex items-center justify-center gap-6 mb-10 text-sm text-muted-foreground">
-                <span>
-                    <span className="font-bold text-foreground">{projects.length}</span>{" "}
-                    projects
-                </span>
-                <span className="hidden sm:inline">·</span>
-                <span>
-                    <span className="font-bold text-foreground">
-                        {totalStars.toLocaleString()}
-                    </span>{" "}
-                    GitHub stars
-                </span>
-                <span className="hidden sm:inline">·</span>
-                <span>
-                    <span className="font-bold text-foreground">
-                        {totalForks.toLocaleString()}
-                    </span>{" "}
-                    forks
-                </span>
+                <ul className="mt-6 flex flex-wrap gap-x-6 gap-y-2 text-sm text-muted-foreground">
+                    <li>
+                        <span className="font-medium tabular-nums text-foreground">{projects.length}</span>{" "}
+                        projects
+                    </li>
+                    <li>
+                        <span className="font-medium tabular-nums text-foreground">
+                            {totalStars.toLocaleString()}
+                        </span>{" "}
+                        GitHub stars on public repos
+                    </li>
+                    <li>
+                        <span className="font-medium tabular-nums text-foreground">
+                            {totalForks.toLocaleString()}
+                        </span>{" "}
+                        forks
+                    </li>
+                </ul>
             </div>
 
-            {/* Featured tier */}
-            <div className="mb-16">
-                <h2 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-6">
-                    ★ Featured
-                </h2>
-                <motion.div
-                    variants={container}
-                    initial="hidden"
-                    animate="show"
-                    className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
-                >
+            {filter === "all" && (
+                <div className="mb-16 grid grid-cols-1 gap-4 md:grid-cols-2">
                     {featured.map((project) => (
-                        <motion.div key={project.id} variants={item} className="h-full">
-                            <ProjectCard project={project} featured />
-                        </motion.div>
+                        <ProjectCard key={project.id} project={project} featured />
                     ))}
-                </motion.div>
-            </div>
+                </div>
+            )}
 
             {/* Category filters */}
-            <div className="flex flex-wrap items-center justify-center gap-2 mb-10">
+            <div className="mb-8 flex flex-wrap gap-2">
                 {PROJECT_CATEGORIES.map((cat) => (
                     <button
                         key={cat.id}
+                        type="button"
                         onClick={() => setFilter(cat.id)}
                         className={cn(
-                            "px-4 py-1.5 rounded-full text-sm font-medium transition-colors duration-200 border",
+                            "rounded-md border px-3 py-1.5 text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring active:scale-[0.98]",
                             filter === cat.id
-                                ? "bg-primary text-primary-foreground border-primary"
-                                : "bg-transparent text-muted-foreground border-black/10 dark:border-white/10 hover:border-primary/50 hover:text-primary",
+                                ? "border-primary bg-primary text-primary-foreground"
+                                : "border-border text-muted-foreground hover:text-foreground",
                         )}
                     >
                         {cat.label}
@@ -148,9 +132,9 @@ export function ProjectsExplorer({ projects }: { projects: Project[] }) {
             <motion.div
                 key={filter}
                 variants={container}
-                initial="hidden"
+                initial={false}
                 animate="show"
-                className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+                className="grid grid-cols-1 gap-4 md:grid-cols-2"
             >
                 {rest.map((project) => (
                     <motion.div key={project.id} variants={item} className="h-full">

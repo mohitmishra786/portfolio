@@ -2,7 +2,7 @@
  * Project catalogue for the portfolio.
  *
  * Stats (stars/forks) reflect GitHub as of the last manual refresh and are
- * optionally overridden at build time by the live GitHub API — see
+ * optionally overridden at build time by the live GitHub API. See
  * `src/lib/github.ts`. Categories drive the filter chips on the Projects page.
  */
 
@@ -36,62 +36,106 @@ export interface Project {
     featured?: boolean;
     /** Optional highlight metrics rendered as pills on featured cards. */
     highlights?: string[];
-    /** Sorting weight — higher appears first within its tier. */
+    /** Sorting weight. Higher appears first within its tier. */
     order?: number;
+    /** False when the GitHub repo is private and should not be linked. */
+    repoPublic?: boolean;
+    /** Headline figure for featured rows. */
+    metric?: { value: string; label: string };
+    /** Extra figures shown beside the headline metric. */
+    metrics?: { value: string; label: string }[];
 }
 
 export const PROJECTS: Project[] = [
     // ─── Flagship / highest-traction ──────────────────────────────────────────
     {
+        id: "build-distributed-systems",
+        title: "Build Distributed Systems",
+        tagline: "28 tracks and 343+ challenges, from message passing to consensus",
+        description:
+            "A hands-on course for distributed systems. You implement real algorithms against Maelstrom-style tests: message passing, gossip, Raft, storage engines, queues, and failure handling, in eight languages. The repository is private. The site is public.",
+        stack: "Distributed Systems, Maelstrom, Go, Rust, C++, Python",
+        category: "systems",
+        homepage: "https://builddistributedsystem.com",
+        github: "https://github.com/mohitmishra786/build-distributed-systems",
+        link: "https://builddistributedsystem.com",
+        repoPublic: false,
+        featured: true,
+        highlights: ["5,000+ users", "28 tracks", "343+ challenges"],
+        metric: { value: "5,000+", label: "users" },
+        order: 100,
+    },
+    {
+        id: "lowlevelcraft",
+        title: "LowLevelCraft",
+        tagline: "479 tasks in C, assembly, compilers, CPUs, and operating systems",
+        description:
+            "A practice site for low-level engineering. Tracks cover language foundations, compilers, CPU architecture, firmware, operating systems, performance, binary analysis, networking, virtual machines, graphics, and storage. The repository is private. The site is public.",
+        stack: "C, x86, ARM, Compilers, Operating Systems",
+        category: "systems",
+        homepage: "https://www.lowlevelcraft.com",
+        github: "https://github.com/mohitmishra786/low-level-craft",
+        link: "https://www.lowlevelcraft.com",
+        repoPublic: false,
+        featured: true,
+        highlights: ["1,556+ registered users", "479 tasks", "1,551+ test cases"],
+        metric: { value: "1,556+", label: "registered users" },
+        order: 95,
+    },
+    {
         id: "amilearningenough",
         title: "amILearningEnough",
-        tagline: "Low-level programming roadmap starred 1,300+ times",
+        tagline: "Low-level programming roadmap with 1,356 GitHub stars",
         description:
-            "A curated low-level programming roadmap and resource hub covering C, x86 assembly, systems programming, deep learning, and neural networks. Adopted by a community of 1,300+ developers and forked 89 times for personal learning tracks.",
+            "A curated low-level programming roadmap and resource hub covering C, x86 assembly, systems programming, deep learning, and neural networks. Forked 89 times for personal learning tracks.",
         stack: "C, x86 Assembly, Systems Programming, Deep Learning",
         category: "systems",
         homepage: "https://mohitmishra786.github.io/amILearningEnough/",
         github: "https://github.com/mohitmishra786/amILearningEnough",
         link: "https://mohitmishra786.github.io/amILearningEnough/",
-        stars: 1335,
+        stars: 1356,
         forks: 89,
         featured: true,
-        highlights: ["1,335 stars", "89 forks", "89 contributors"],
-        order: 100,
+        highlights: ["1,356 stars", "89 forks"],
+        metric: { value: "1,356", label: "GitHub stars" },
+        order: 90,
     },
     {
         id: "low-level-dev-skills",
         title: "Low-Level Dev Skills",
-        tagline: "AI agent skills suite for C/C++, Rust & Zig toolchains",
+        tagline: "142 agent skills for C, C++, Rust, and Zig. 226 GitHub stars.",
         description:
-            "A curated suite of AI agent skills for systems and low-level programming, covering compilers, debuggers, profilers, build systems, sanitizers, and binary analysis across C/C++, Rust, and Zig toolchains. Shipped as a product at lowleveldevskills.com with 120+ stars.",
+            "A curated suite of AI agent skills for systems and low-level programming, covering compilers, debuggers, profilers, build systems, sanitizers, and binary analysis across C, C++, Rust, and Zig. 51.1k installs on skills.sh, and 226 GitHub stars. Published at lowleveldevskills.com.",
         stack: "C/C++, Rust, Zig, Compilers, Debuggers, Profilers",
         category: "developer-tooling",
         homepage: "https://www.lowleveldevskills.com",
         github: "https://github.com/mohitmishra786/low-level-dev-skills",
         link: "https://www.lowleveldevskills.com",
-        stars: 122,
-        forks: 15,
+        stars: 226,
+        forks: 28,
         featured: true,
-        highlights: ["122 stars", "15 forks", "Production site"],
-        order: 95,
+        highlights: ["226 stars", "51.1k installs", "142 skills"],
+        metric: { value: "51.1k", label: "installs" },
+        metrics: [
+            { value: "51.1k", label: "installs" },
+            { value: "226", label: "GitHub stars" },
+        ],
+        order: 85,
     },
     {
         id: "mohit-portfolio",
-        title: "Interactive Terminal Portfolio",
-        tagline: "This site — an interactive dev portfolio with a terminal",
+        title: "Portfolio template",
+        tagline: "Earlier open-source portfolio template, 11 GitHub stars",
         description:
-            "The portfolio you're looking at: a Next.js App Router site featuring an interactive terminal, GitHub contributions graph, and motion-driven project showcases. 11 stars and 3 forks from other developers using it as a template.",
-        stack: "Next.js, TypeScript, React, Tailwind, Framer Motion",
+            "An older open-source portfolio template other developers have starred and forked. This site is the current portfolio.",
+        stack: "Next.js, TypeScript, React, Tailwind",
         category: "web",
         homepage: "https://bit.ly/3fzHyPn",
         github: "https://github.com/mohitmishra786/mohit-portfolio",
         link: "https://bit.ly/3fzHyPn",
         stars: 11,
         forks: 3,
-        featured: true,
-        highlights: ["11 stars", "Live site", "Open-sourced template"],
-        order: 90,
+        order: 45,
     },
 
     // ─── Developer tooling ────────────────────────────────────────────────────
@@ -129,7 +173,7 @@ export const PROJECTS: Project[] = [
     {
         id: "mdmend",
         title: "mdmend",
-        tagline: "Go Markdown linter — 50 rules, 38 auto-fixable",
+        tagline: "Go Markdown linter, 50 rules, 38 auto-fixable",
         description:
             "A fast Go Markdown linter and fixer with 50 rules (38 auto-fixable), shipped as a single zero-runtime-dependency binary. Distributed via Homebrew, Scoop, and GitHub Actions with SARIF output.",
         stack: "Go, CLI, Linter, GitHub Actions",
@@ -137,7 +181,7 @@ export const PROJECTS: Project[] = [
         homepage: "https://mohitmishra786.github.io/mdmend/",
         github: "https://github.com/mohitmishra786/mdmend",
         link: "https://mohitmishra786.github.io/mdmend/",
-        stars: 1,
+        stars: 3,
         forks: 0,
         highlights: ["Homebrew + Scoop", "SARIF output"],
         order: 76,
@@ -192,7 +236,7 @@ export const PROJECTS: Project[] = [
         title: "LSM Tree Generator",
         tagline: "Memtable, SSTables & Bloom filters in C, visualized",
         description:
-            "A from-scratch implementation of core LSM Tree components — Memtable, SSTables, and Bloom filters — in C, with a web visualization demonstrating operations and the compaction process.",
+            "A from-scratch implementation of core LSM Tree components (Memtable, SSTables, and Bloom filters) in C, with a web visualization of operations and compaction.",
         stack: "C, Data Structures, Systems Programming",
         category: "systems",
         github: "https://github.com/mohitmishra786/lsm-tree-generator",
@@ -232,43 +276,26 @@ export const PROJECTS: Project[] = [
 
     // ─── Web / interactive learning ───────────────────────────────────────────
     {
-        id: "build-distributed-systems",
-        title: "Build Distributed Systems",
-        tagline: "Learn distributed systems by implementing them, 75 tasks",
+        id: "readprism",
+        title: "Readprism",
+        tagline: "RSS reader that ranks a digest by how you actually read",
         description:
-            "An interactive learning platform to master distributed systems by implementing them from scratch — consensus protocols, replicated storage, message queues — across 15 tracks and 75 progressive tasks with automated test verification.",
-        stack: "Next.js, TypeScript, Distributed Systems",
+            "A self-hostable RSS and newsletter reader with a behavioral, explainable ranking engine. Open source under AGPL-3.0.",
+        stack: "Python, RSS",
         category: "web",
-        homepage: "https://build-distributed-systems.vercel.app",
-        github: "https://github.com/mohitmishra786/build-distributed-systems",
-        link: "https://build-distributed-systems.vercel.app",
-        stars: 0,
+        homepage: "https://readprism.app",
+        github: "https://github.com/mohitmishra786/readprism",
+        link: "https://readprism.app",
+        stars: 5,
         forks: 0,
-        highlights: ["15 tracks", "75 tasks"],
-        order: 72,
-    },
-    {
-        id: "compiler-craft",
-        title: "CompilerCraft",
-        tagline: "Learn compiler engineering via in-browser C tasks",
-        description:
-            "A hands-on platform for learning compiler engineering through interactive micro-tasks: write C in the browser, execute against test cases, and progress through structured learning paths covering lexing, parsing, semantic analysis, and code generation.",
-        stack: "Next.js, TypeScript, C, x86/ARM",
-        category: "web",
-        homepage: "https://compiler-craft.vercel.app",
-        github: "https://github.com/mohitmishra786/compiler-craft",
-        link: "https://compiler-craft.vercel.app",
-        stars: 0,
-        forks: 0,
-        highlights: ["In-browser execution", "Full compiler pipeline"],
-        order: 71,
+        order: 73,
     },
     {
         id: "postgres-hackers-explorer",
         title: "Postgres Hackers Explorer",
         tagline: "AI-powered explorer over 700k pgsql-hackers emails",
         description:
-            "An AI-powered reader and explorer for the pgsql-hackers mailing list archive — over 700,000 emails spanning decades. Provides semantic search, RAG-powered Q&A with citations, and patch tracking by commitfest status.",
+            "An AI-powered reader for the pgsql-hackers mailing list archive, over 700,000 emails spanning decades. Semantic search, cited Q&A, and patch tracking by commitfest status.",
         stack: "TypeScript, Vector Embeddings, RAG",
         category: "web",
         homepage: "https://postgres-hackers-explorer.vercel.app",
@@ -284,7 +311,7 @@ export const PROJECTS: Project[] = [
         title: "VisLab",
         tagline: "Embeddable CPU/cache/scheduler simulations, 17 widgets",
         description:
-            "Canvas-based simulations for CPU pipelines, caches, schedulers, and storage — 17 registry widgets embeddable in Astro, React, Jekyll, or static HTML for computer-science education.",
+            "Canvas-based simulations for CPU pipelines, caches, schedulers, and storage. 17 widgets you can embed in Astro, React, Jekyll, or static HTML.",
         stack: "TypeScript, Canvas, Astro, React",
         category: "web",
         github: "https://github.com/mohitmishra786/vislab",
@@ -316,7 +343,7 @@ export const PROJECTS: Project[] = [
         title: "AURORA-DEV",
         tagline: "Autonomous multi-agent system for end-to-end engineering",
         description:
-            "Autonomous Unified Recursive Orchestration & Refinement Architecture for Development — a multi-agent system built on LangGraph that plans, implements, audits, and verifies software end-to-end rather than acting as glorified autocomplete.",
+            "A multi-agent system built on LangGraph that plans, implements, audits, and verifies software end to end, instead of acting as autocomplete.",
         stack: "Python, FastAPI, LangGraph",
         category: "ai-ml",
         github: "https://github.com/mohitmishra786/aurora-dev",
@@ -402,13 +429,13 @@ export const PROJECTS: Project[] = [
         title: "TheCoreDump",
         tagline: "Tech stories, unfiltered",
         description:
-            "A publication for unfiltered technical storytelling — engineering deep dives, post-mortems, and systems writing for developers.",
+            "A publication for technical storytelling: engineering deep dives, post-mortems, and systems writing for developers.",
         stack: "HTML, Content",
         category: "web",
         homepage: "https://mohitmishra786.github.io/TheCoreDump/",
         github: "https://github.com/mohitmishra786/TheCoreDump",
         link: "https://mohitmishra786.github.io/TheCoreDump/",
-        stars: 8,
+        stars: 9,
         forks: 1,
         order: 46,
     },
