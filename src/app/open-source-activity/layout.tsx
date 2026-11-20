@@ -4,7 +4,7 @@ import { pageMetadata } from "@/lib/seo";
 export const metadata: Metadata = pageMetadata({
     title: "Open source activity",
     description:
-        "Open-source activity by Mohit Mishra: recent contributions, pinned repositories, and public systems projects.",
+        "Open-source contributions by Mohit Mishra: merged, open, and closed pull requests and issues in public projects such as sched-ext/scx and edgcpp/compiler.",
     path: "/open-source-activity",
 });
 
