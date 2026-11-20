@@ -24,7 +24,17 @@ interface ProfileConfig {
 
 const REVALIDATE_SECONDS = 3600;
 const PER_PAGE = 100;
-const MAX_PAGES = 5; // the search API stops at 1000 results anyway
+// Search returns at most 1000 results per query, so each state is its own query.
+const SEARCH_LIMIT = 1000;
+const MAX_PAGES = SEARCH_LIMIT / PER_PAGE;
+
+const QUERIES = [
+    "is:pr is:merged",
+    "is:pr is:open",
+    "is:pr is:closed is:unmerged",
+    "is:issue is:open",
+    "is:issue is:closed",
+];
 
 interface SearchItem {
     id: number;
@@ -74,17 +84,20 @@ async function getProfileConfig(): Promise<ProfileConfig> {
     };
 }
 
-async function search(type: "pr" | "issue", ownOwners: string[]): Promise<SearchItem[]> {
+async function search(
+    qualifiers: string,
+    ownOwners: string[],
+): Promise<{ items: SearchItem[]; partial: boolean }> {
     const user = siteConfig.githubUsername;
     const q = [
         `author:${user}`,
-        `is:${type}`,
+        qualifiers,
         "is:public",
         ...ownOwners.map((owner) => `-user:${owner}`),
     ].join(" ");
 
-
     const items: SearchItem[] = [];
+    let partial = false;
     for (let page = 1; page <= MAX_PAGES; page++) {
         const params = new URLSearchParams({
             q,
@@ -98,13 +111,14 @@ async function search(type: "pr" | "issue", ownOwners: string[]): Promise<Search
             next: { revalidate: REVALIDATE_SECONDS },
         });
         if (!res.ok) {
-            throw new Error(`GitHub search for ${type}s failed: ${res.status}`);
+            throw new Error(`GitHub search "${qualifiers}" failed: ${res.status}`);
         }
         const body = (await res.json()) as { total_count: number; items: SearchItem[] };
         items.push(...body.items);
+        partial = body.total_count > SEARCH_LIMIT;
         if (items.length >= body.total_count || body.items.length < PER_PAGE) break;
     }
-    return items;
+    return { items, partial };
 }
 
 function repoName(item: SearchItem): string {
@@ -137,13 +151,14 @@ export async function getContributions(): Promise<ContributionData | null> {
 
     let config: ProfileConfig;
     let raw: SearchItem[];
+    let partial: boolean;
     try {
         config = await getProfileConfig();
-        const [prs, issues] = await Promise.all([
-            search("pr", config.ownOwners),
-            search("issue", config.ownOwners),
-        ]);
-        raw = [...prs, ...issues];
+        const results = await Promise.all(
+            QUERIES.map((qualifiers) => search(qualifiers, config.ownOwners)),
+        );
+        raw = results.flatMap((r) => r.items);
+        partial = results.some((r) => r.partial);
     } catch (error) {
         console.error("Failed to load open source contributions:", error);
         return null;
@@ -190,6 +205,7 @@ export async function getContributions(): Promise<ContributionData | null> {
 
     return {
         items,
+        partial,
         repos: [...repos.values()].sort(
             (a, b) =>
                 featuredRank(config.featuredRepos, a.repo) -

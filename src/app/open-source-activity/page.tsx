@@ -42,6 +42,12 @@ export default async function OpenSourceActivityPage() {
                             </div>
                         ))}
                     </dl>
+                    {data.partial && (
+                        <p className="mt-3 text-sm text-muted-foreground">
+                            GitHub search returns at most 1,000 results per query, so some counts
+                            are lower than the real totals.
+                        </p>
+                    )}
 
                     <ContributionActivity items={data.items} />
                     <ContributedRepos repos={data.repos} />

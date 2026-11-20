@@ -1,8 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState, type KeyboardEvent } from "react";
 import { ArrowUpRight } from "lucide-react";
-import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import {
     itemDate,
@@ -22,6 +21,14 @@ const TABS: { kind: ContributionKind; label: string; verb: string; empty: string
 
 const PAGE_SIZE = 20;
 
+// Fixed to UTC so the server render and the browser hydration produce the same text.
+const dateFormat = new Intl.DateTimeFormat("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+    timeZone: "UTC",
+});
+
 function statusLabel(item: ContributionItem): string | null {
     if (item.kind !== "closedIssue") return null;
     if (item.stateReason === "completed") return "Resolved";
@@ -34,6 +41,27 @@ export function ContributionActivity({ items }: { items: ContributionData["items
         TABS.find((tab) => items[tab.kind].length > 0)?.kind ?? "merged",
     );
     const [visible, setVisible] = useState(PAGE_SIZE);
+    const tabRefs = useRef<(HTMLButtonElement | null)[]>([]);
+
+    const select = (kind: ContributionKind) => {
+        setActive(kind);
+        setVisible(PAGE_SIZE);
+    };
+
+    // Arrow keys, Home and End move focus and selection between tabs (WAI-ARIA tabs pattern).
+    const onTabKeyDown = (event: KeyboardEvent<HTMLButtonElement>, index: number) => {
+        const last = TABS.length - 1;
+        const next = {
+            ArrowRight: index === last ? 0 : index + 1,
+            ArrowLeft: index === 0 ? last : index - 1,
+            Home: 0,
+            End: last,
+        }[event.key];
+        if (next === undefined) return;
+        event.preventDefault();
+        select(TABS[next].kind);
+        tabRefs.current[next]?.focus();
+    };
 
     const tab = TABS.find((t) => t.kind === active)!;
     const list = items[active];
@@ -47,18 +75,20 @@ export function ContributionActivity({ items }: { items: ContributionData["items
                 aria-label="Contribution type"
                 className="mt-6 flex flex-wrap gap-2"
             >
-                {TABS.map((t) => (
+                {TABS.map((t, index) => (
                     <button
                         key={t.kind}
+                        ref={(el) => {
+                            tabRefs.current[index] = el;
+                        }}
                         type="button"
                         role="tab"
                         id={`tab-${t.kind}`}
                         aria-selected={active === t.kind}
                         aria-controls="contribution-panel"
-                        onClick={() => {
-                            setActive(t.kind);
-                            setVisible(PAGE_SIZE);
-                        }}
+                        tabIndex={active === t.kind ? 0 : -1}
+                        onClick={() => select(t.kind)}
+                        onKeyDown={(event) => onTabKeyDown(event, index)}
                         className={cn(
                             "inline-flex items-center gap-2 rounded-full border px-3.5 py-1.5 text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
                             active === t.kind
@@ -100,7 +130,7 @@ export function ContributionActivity({ items }: { items: ContributionData["items
                                             )}
                                         </span>
                                         <span className="whitespace-nowrap text-sm text-muted-foreground">
-                                            {tab.verb} {format(new Date(itemDate(item)), "MMM d, yyyy")}
+                                            {tab.verb} {dateFormat.format(new Date(itemDate(item)))}
                                         </span>
                                     </a>
                                 </li>

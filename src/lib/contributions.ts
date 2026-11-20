@@ -27,6 +27,8 @@ export interface RepoSummary {
 export interface ContributionData {
     items: Record<ContributionKind, ContributionItem[]>;
     repos: RepoSummary[];
+    // True when a search had more results than GitHub returns, so counts are lower bounds.
+    partial: boolean;
 }
 
 // The date a list is sorted and labelled by: when it was opened for open items,
