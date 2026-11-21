@@ -281,7 +281,7 @@ export default function AboutPage() {
                                 {
                                     title: "Executable Files for Linux: Under the Hood of ELFs for Flexible and Secure Low-Level Coding",
                                     publisher: "Apress",
-                                    date: "June 2026 (Forthcoming)",
+                                    date: "April 2026",
                                     link: "https://www.amazon.com/Executable-Files-Linux-Flexible-Low-Level/dp/B0FQTTBB79",
                                     desc: "A deep dive into the Executable and Linkable Format (ELF). Explore how code is compiled, linked, and loaded in memory. Covers binary analysis, dynamic linking, symbol resolution, and kernel-level execution processes for systems programmers and security researchers.",
                                     author: "Mohit Mishra",
